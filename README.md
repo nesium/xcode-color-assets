@@ -72,4 +72,48 @@ into this…
 
 ![Xcode Screenshot](./.github/Xcode.png)
 
+and also this…
+
+```swift
+import UIKit
+
+extension UIColor {
+  enum Custom {}
+}
+
+extension UIColor.Custom {
+  static let applicationBackgroundLight = UIColor(named: "ApplicationBackgroundLight")!
+  static let applicationBackgroundDark = UIColor(named: "ApplicationBackgroundDark")!
+  static let iconActive = UIColor(named: "IconActive")!
+  static let iconInactive = UIColor(named: "IconInactive")!
+  static let textPrimary = UIColor(named: "TextPrimary")!
+  static let textSecondary = UIColor(named: "TextSecondary")!
+  static let lightContentSeparator = UIColor(named: "LightContentSeparator")!
+  static let numericInputActionKeyBackground = UIColor(named: "NumericInputActionKeyBackground")!
+  static let numericInputActionKeyHighlight = UIColor(named: "NumericInputActionKeyHighlight")!
+  static let numericInputActionKeyShadow = UIColor(named: "NumericInputActionKeyShadow")!
+  static let numericInputActionKeyText = UIColor(named: "NumericInputActionKeyText")!
+  static let numericInputDoneKeyBackground = UIColor(named: "NumericInputDoneKeyBackground")!
+  static let numericInputDoneKeyHighlight = UIColor(named: "NumericInputDoneKeyHighlight")!
+  static let numericInputDoneKeyShadow = UIColor(named: "NumericInputDoneKeyShadow")!
+  static let numericInputDoneKeyText = UIColor(named: "NumericInputDoneKeyText")!
+  static let numericInputFunctionKeyBackground = UIColor(named: "NumericInputFunctionKeyBackground")!
+  static let numericInputFunctionKeyHighlight = UIColor(named: "NumericInputFunctionKeyHighlight")!
+  static let numericInputFunctionKeyShadow = UIColor(named: "NumericInputFunctionKeyShadow")!
+  static let numericInputFunctionKeyText = UIColor(named: "NumericInputFunctionKeyText")!
+  static let numericInputNumericKeyBackground = UIColor(named: "NumericInputNumericKeyBackground")!
+  static let numericInputNumericKeyHighlight = UIColor(named: "NumericInputNumericKeyHighlight")!
+  static let numericInputNumericKeyShadow = UIColor(named: "NumericInputNumericKeyShadow")!
+  static let numericInputNumericKeyText = UIColor(named: "NumericInputNumericKeyText")!
+  static let numericInputBackground = UIColor(named: "NumericInputBackground")!
+}
+```
+
+Usage:
+
+```
+$ ./xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets
+$ ./xcode-color-assets gen-swift colors.assetstyles -o Colors.swift
+```
+
 > Caveat: This project is in the "works for me" state. There is basically no error handling at this point.

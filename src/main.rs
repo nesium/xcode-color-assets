@@ -1,36 +1,70 @@
 mod asset_catalog;
 mod ast;
+mod gen_swift;
 mod parser;
 
 use crate::asset_catalog::write_asset_catalog;
+use crate::gen_swift::gen_swift;
 use crate::parser::parse_document_from_file;
-use clap::{App, Arg};
+use clap::{App, Arg, SubCommand};
 
 fn main() {
   let matches = App::new("color-assets")
     .version("1.0")
     .about("Create Xcode Asset Catalog with colors for light & dark mode.")
-    .arg(
-      Arg::with_name("output")
-        .short("o")
-        .help("Sets the output filename")
-        .value_name("OUTPUT_FILE")
-        .required(true),
+    .subcommand(
+      SubCommand::with_name("gen-assets")
+        .about("generates the Asset Catalog")
+        .arg(
+          Arg::with_name("output")
+            .short("o")
+            .help("Sets the output filename (e.g. Colors.xcassets)")
+            .value_name("OUTPUT_FILE")
+            .required(true),
+        )
+        .arg(
+          Arg::with_name("input")
+            .help("Sets the input file")
+            .value_name("INPUT_FILE")
+            .required(true)
+            .index(1),
+        ),
     )
-    .arg(
-      Arg::with_name("input")
-        .help("Sets the input file")
-        .value_name("INPUT_FILE")
-        .required(true)
-        .index(1),
+    .subcommand(
+      SubCommand::with_name("gen-swift")
+        .about("generates Swift code")
+        .arg(
+          Arg::with_name("output")
+            .short("o")
+            .help("Sets the output filename (e.g. Colors.swift)")
+            .value_name("OUTPUT_FILE")
+            .required(true),
+        )
+        .arg(
+          Arg::with_name("input")
+            .help("Sets the input file")
+            .value_name("INPUT_FILE")
+            .required(true)
+            .index(1),
+        ),
     )
     .get_matches();
 
-  let input_file = matches.value_of("input").unwrap();
-  let output_path = matches.value_of("output").unwrap();
-
-  let doc = parse_document_from_file(&input_file).expect("Could not parse input file.");
-  write_asset_catalog(&doc, &output_path).expect("Could not write asset catalog.");
+  match matches.subcommand() {
+    ("gen-assets", Some(m)) => {
+      let input_file = m.value_of("input").unwrap();
+      let output_path = m.value_of("output").unwrap();
+      let doc = parse_document_from_file(&input_file).expect("Could not parse input file.");
+      write_asset_catalog(&doc, &output_path).expect("Could not write asset catalog.");
+    }
+    ("gen-swift", Some(m)) => {
+      let input_file = m.value_of("input").unwrap();
+      let output_path = m.value_of("output").unwrap();
+      let doc = parse_document_from_file(&input_file).expect("Could not parse input file.");
+      gen_swift(&doc, &output_path).expect("Could not generate Swift code.");
+    }
+    (&_, _) => {}
+  }
 }
 
 #[cfg(test)]
