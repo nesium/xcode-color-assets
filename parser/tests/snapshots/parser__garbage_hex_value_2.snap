@@ -1,0 +1,19 @@
+---
+created: "2019-08-18T08:58:39.598912Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 0, in TakeWhileMN:
+a: #fff
+    ^
+
+1: at line 0, in Hex Value:
+a: #fff
+    ^
+
+2: at line 0, in Declaration:
+a: #fff
+^
+
+

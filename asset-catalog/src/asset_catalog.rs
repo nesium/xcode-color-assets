@@ -1,4 +1,5 @@
-use super::ast::{
+use super::Error;
+use parser::ast::{
   Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
 };
 use serde_json::json;
@@ -6,7 +7,19 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-pub fn write_asset_catalog(doc: &Document, path: &str) -> std::io::Result<()> {
+fn path_to_str(path: &Path) -> String {
+  path
+    .file_name()
+    .and_then(|s| s.to_str())
+    .map(String::from)
+    .unwrap()
+}
+
+pub fn write_asset_catalog(
+  doc: &Document,
+  path: &Path,
+  delete_directory_if_exists: bool,
+) -> Result<(), Error> {
   let var_lookup: HashMap<String, &Value> = doc
     .items
     .iter()
@@ -17,17 +30,22 @@ pub fn write_asset_catalog(doc: &Document, path: &str) -> std::io::Result<()> {
     .map(|variable| (variable.identifier.to_string(), &variable.value))
     .collect();
 
-  if Path::new(path).exists() {
-    fs::remove_dir_all(path)?;
+  if path.exists() {
+    if delete_directory_if_exists {
+      fs::remove_dir_all(&path).map_err(|_| Error::CouldNotRemoveDirectory(path_to_str(&path)))?;
+    }
   }
-  fs::create_dir_all(path)?;
+  fs::create_dir_all(&path).map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&path)))?;
 
   for item in doc.items.iter() {
     match item {
       DocumentItem::RuleSet(r) => {
-        write_ruleset_items(r, path, "", &var_lookup)?;
+        write_ruleset(r, &path, &r.identifier, &var_lookup)?;
       }
-      _ => {}
+      DocumentItem::Declaration(d) => {
+        write_declaration(d, &path, &d.identifier, &var_lookup)?;
+      }
+      DocumentItem::Variable(_) => {}
     }
   }
 
@@ -36,11 +54,13 @@ pub fn write_asset_catalog(doc: &Document, path: &str) -> std::io::Result<()> {
 
 fn write_ruleset(
   ruleset: &RuleSet,
-  path: &str,
+  path: &Path,
   identifier: &str,
   var_lookup: &HashMap<String, &Value>,
-) -> std::io::Result<()> {
-  fs::create_dir(path)?;
+) -> Result<(), Error> {
+  let ruleset_path = path.join(&ruleset.identifier);
+  fs::create_dir(&ruleset_path)
+    .map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&ruleset_path)))?;
 
   let info = json!({
     "info": {
@@ -49,34 +69,23 @@ fn write_ruleset(
     }
   });
 
+  let json_path = ruleset_path.join("Contents.json");
+
   fs::write(
-    Path::new(path).join("Contents.json"),
+    &json_path,
     serde_json::to_string_pretty(&info).unwrap().as_bytes(),
-  )?;
+  )
+  .map_err(|_| Error::CouldNotCreateFile(path_to_str(&json_path)))?;
 
-  write_ruleset_items(ruleset, path, identifier, var_lookup)
-}
-
-fn write_ruleset_items(
-  ruleset: &RuleSet,
-  path: &str,
-  identifier: &str,
-  var_lookup: &HashMap<String, &Value>,
-) -> std::io::Result<()> {
   for item in ruleset.items.iter() {
     match item {
       RuleSetItem::RuleSet(r) => {
-        let identifier = format!("{}{}", identifier, r.identifier);
-        write_ruleset(
-          r,
-          Path::new(path).join(&r.identifier).to_str().unwrap(),
-          &identifier,
-          &var_lookup,
-        )?;
+        let child_identifier = format!("{}{}", identifier, r.identifier);
+        write_ruleset(r, &ruleset_path, &child_identifier, &var_lookup)?;
       }
       RuleSetItem::Declaration(d) => {
-        let identifier = format!("{}{}", identifier, d.identifier);
-        write_declaration(d, path, &identifier, &var_lookup)?;
+        let child_identifier = format!("{}{}", identifier, d.identifier);
+        write_declaration(d, &ruleset_path, &child_identifier, &var_lookup)?;
       }
     }
   }
@@ -86,15 +95,14 @@ fn write_ruleset_items(
 
 fn write_declaration(
   declaration: &Declaration<Value>,
-  path: &str,
+  path: &Path,
   identifier: &str,
   var_lookup: &HashMap<String, &Value>,
-) -> std::io::Result<()> {
-  let colorset_path = Path::new(path)
-    .join(identifier.to_string())
-    .with_extension("colorset");
+) -> Result<(), Error> {
+  let colorset_path = path.join(identifier.to_string()).with_extension("colorset");
 
-  fs::create_dir(&colorset_path)?;
+  fs::create_dir(&colorset_path)
+    .map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&colorset_path)))?;
 
   enum ResolvedVariable {
     Color(Color),
@@ -197,10 +205,11 @@ fn write_declaration(
     Value::ColorSet(ref colorset) => append_colorset(&mut info, colorset),
   }
 
-  fs::write(
-    colorset_path.join("Contents.json"),
-    serde_json::to_string_pretty(&info).unwrap().as_bytes(),
-  )?;
+  let json_path = colorset_path.join("Contents.json");
 
-  Ok(())
+  fs::write(
+    &json_path,
+    serde_json::to_string_pretty(&info).unwrap().as_bytes(),
+  )
+  .map_err(|_| Error::CouldNotCreateFile(path_to_str(&json_path)))
 }

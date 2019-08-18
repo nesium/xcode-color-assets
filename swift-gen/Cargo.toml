@@ -1,0 +1,12 @@
+[package]
+name = "swift-gen"
+version = "0.1.0"
+authors = ["mb <mb@nesium.com>"]
+edition = "2018"
+
+[dependencies]
+parser = { path = "../parser" }
+
+[dev-dependencies]
+dir-diff = "0.3"
+tempdir = "0.3"

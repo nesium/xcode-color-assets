@@ -1,0 +1,80 @@
+---
+created: "2019-08-18T08:14:08.022884Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [
+        Declaration(
+            Declaration {
+                identifier: "a",
+                value: ColorSet(
+                    ColorSet {
+                        light: Color(
+                            Color {
+                                r: 255,
+                                g: 0,
+                                b: 255,
+                                a: 0.3,
+                            },
+                        ),
+                        dark: Color(
+                            Color {
+                                r: 0,
+                                g: 255,
+                                b: 0,
+                                a: 1.0,
+                            },
+                        ),
+                    },
+                ),
+            },
+        ),
+        Declaration(
+            Declaration {
+                identifier: "b",
+                value: ColorSet(
+                    ColorSet {
+                        light: Color(
+                            Color {
+                                r: 255,
+                                g: 0,
+                                b: 255,
+                                a: 0.3,
+                            },
+                        ),
+                        dark: Color(
+                            Color {
+                                r: 0,
+                                g: 255,
+                                b: 0,
+                                a: 1.0,
+                            },
+                        ),
+                    },
+                ),
+            },
+        ),
+        Declaration(
+            Declaration {
+                identifier: "c",
+                value: ColorSet(
+                    ColorSet {
+                        light: Color(
+                            Color {
+                                r: 255,
+                                g: 0,
+                                b: 255,
+                                a: 0.3,
+                            },
+                        ),
+                        dark: Variable(
+                            "applicationBackgroundLight",
+                        ),
+                    },
+                ),
+            },
+        ),
+    ],
+}

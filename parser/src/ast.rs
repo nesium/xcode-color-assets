@@ -3,10 +3,11 @@ pub struct Document {
   pub items: Vec<DocumentItem>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum DocumentItem {
   Variable(Declaration<Value>),
   RuleSet(RuleSet),
+  Declaration(Declaration<Value>)
 }
 
 #[derive(Debug, Clone, PartialEq)]

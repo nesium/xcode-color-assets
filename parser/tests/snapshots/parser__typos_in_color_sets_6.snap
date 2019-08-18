@@ -1,0 +1,32 @@
+---
+created: "2019-08-18T08:33:58.774579Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 3:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+              ^
+expected '$', found .
+
+1: at line 3, in Variable Identifier:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+              ^
+
+2: at line 3, in Alt:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+              ^
+
+3: at line 3, in Declaration:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+        ^
+
+4: at line 3, in ColorSet:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+       ^
+
+5: at line 3, in Declaration:
+    c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
+    ^
+
+

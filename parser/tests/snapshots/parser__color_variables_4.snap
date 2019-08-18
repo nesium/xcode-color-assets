@@ -1,0 +1,18 @@
+---
+created: "2019-08-18T08:50:30.518309Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [
+        Variable(
+            Declaration {
+                identifier: "a1",
+                value: Variable(
+                    "a0",
+                ),
+            },
+        ),
+    ],
+}

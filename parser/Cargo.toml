@@ -1,0 +1,11 @@
+[package]
+name = "parser"
+version = "0.1.0"
+authors = ["mb <mb@nesium.com>"]
+edition = "2018"
+
+[dependencies]
+nom = "5.0"
+
+[dev-dependencies]
+insta = "0.10"

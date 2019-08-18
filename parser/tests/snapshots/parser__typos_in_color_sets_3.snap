@@ -1,0 +1,32 @@
+---
+created: "2019-08-18T08:19:52.014951Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 1:
+    a: (light: #ff00ff 30%, dark: variable)
+                                  ^
+expected '$', found v
+
+1: at line 1, in Variable Identifier:
+    a: (light: #ff00ff 30%, dark: variable)
+                                  ^
+
+2: at line 1, in Alt:
+    a: (light: #ff00ff 30%, dark: variable)
+                                  ^
+
+3: at line 1, in Declaration:
+    a: (light: #ff00ff 30%, dark: variable)
+                           ^
+
+4: at line 1, in ColorSet:
+    a: (light: #ff00ff 30%, dark: variable)
+       ^
+
+5: at line 1, in Declaration:
+    a: (light: #ff00ff 30%, dark: variable)
+    ^
+
+

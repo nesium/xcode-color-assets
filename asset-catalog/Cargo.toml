@@ -1,0 +1,13 @@
+[package]
+name = "asset-catalog"
+version = "0.1.0"
+authors = ["mb <mb@nesium.com>"]
+edition = "2018"
+
+[dependencies]
+serde_json = "1.0"
+parser = { path = "../parser" }
+
+[dev-dependencies]
+dir-diff = "0.3"
+tempdir = "0.3"

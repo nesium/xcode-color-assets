@@ -1,0 +1,11 @@
+[package]
+name = "xcode-color-assets"
+version = "0.2.0"
+authors = ["mb <mb@nesium.com>"]
+edition = "2018"
+
+[dependencies]
+clap = "2.33"
+parser = { path = "../parser" }
+asset-catalog = { path = "../asset-catalog" }
+swift-gen = { path = "../swift-gen" }

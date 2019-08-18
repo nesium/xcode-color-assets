@@ -1,0 +1,11 @@
+---
+created: "2019-08-18T08:44:36.880658Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 0, in Eof:
+.
+^
+
+

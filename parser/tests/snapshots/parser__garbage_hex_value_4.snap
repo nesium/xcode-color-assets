@@ -1,0 +1,12 @@
+---
+created: "2019-08-18T09:05:10.905813Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 0:
+a: #fffffff
+          ^
+expected '\n', found f
+
+

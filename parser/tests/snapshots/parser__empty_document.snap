@@ -1,0 +1,9 @@
+---
+created: "2019-08-18T06:52:52.616734Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [],
+}
