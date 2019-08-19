@@ -81,10 +81,13 @@ extension UIColor {
 
 ```
 
-Usage:
+### Installation via Homebrew
+`brew install nesium/tools/xcode-color-assets`
+
+### Usage
 
 ```
 $ # Use xcode-color-assets SUBCOMMAND --help for more information
-$ ./xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets --color-space display-p3
-$ ./xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift
+$ xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets --color-space display-p3
+$ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift
 ```
