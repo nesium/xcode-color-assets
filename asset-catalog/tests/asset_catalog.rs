@@ -7,10 +7,10 @@ fn asset_catalog() {
   let contents = r#"
     $white: #ffffff
     $black: #000000
+    $classic: (light: $black, dark: $white)
 
     $brightAccent: #5753CF
-
-    $mediumBright: #19C8FF
+    $mediumBright: rgba(25, 200, 255, 1)
     $mediumBrightHighlight: #70D1FA
 
     $grey1: $black
@@ -27,14 +27,14 @@ fn asset_catalog() {
         Background: (light: $white, dark: #434343)
         Highlight: (light: #C4CCDA, dark: #666666)
         Shadow: (light: #848587, dark: $black)
-        Text: (light: $black, dark: $white)
+        Text: $classic
       }
 
       DoneKey {
         Background: (light: $mediumBright, dark: $brightAccent)
-        Highlight: (light: $mediumBrightHighlight, dark: #677ADB)
+        Highlight: (light: $mediumBrightHighlight, dark: rgba(103, 122, 219, 1))
         Shadow: (light: #6E7073, dark: $black)
-        Text: (light: $black, dark: $white)
+        Text: $classic
       }
 
       Background: (light: #D6D9DE 30%, dark: #313131 40%)

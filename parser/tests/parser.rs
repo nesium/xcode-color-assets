@@ -62,6 +62,9 @@ fn color_variables() {
   test_parse_doc("color_variables_2", "$a :#4224be");
   test_parse_doc("color_variables_3", "$a1: #4B0FC6");
   test_parse_doc("color_variables_4", "$a1: $a0");
+  test_parse_doc("color_variables_5", "$a: rgba(0, 127, 255, 0.5)");
+  test_parse_doc("color_variables_6", "$a: rgba (0, 127, 255, 0.5)");
+  test_parse_doc("color_variables_7", "$a: (light: #ff00ff, dark: #00ff00)");
 }
 
 #[test]
@@ -73,6 +76,13 @@ fn garbage_hex_value() {
 }
 
 #[test]
+fn garbage_rgba_values() {
+  test_parse_doc("garbage_rgba_value_1", "$a: rgba(0, 127; 255, 0.5)");
+  test_parse_doc("garbage_rgba_value_2", "$a: rgba0, 127, 255, 0.5)");
+  test_parse_doc("garbage_rgba_value_3", "$a: rgba(0, 300, 255, 0.5)")
+}
+
+#[test]
 fn color_sets() {
   test_parse_doc(
     "color_sets",
@@ -80,6 +90,7 @@ fn color_sets() {
     a: (light: #ff00ff 30%, dark: #00ff00)
     b: (dark: #00ff00, light: #ff00ff 30%)
     c: (dark: $applicationBackgroundLight, light: #ff00ff 30%)
+    d: (light: rgba(33, 199, 201, 1), dark: #ff00ff 30%)
   "#,
   )
 }

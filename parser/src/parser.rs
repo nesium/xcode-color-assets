@@ -7,6 +7,7 @@ use nom::character::complete::{alphanumeric1, char, digit1, multispace0, newline
 use nom::combinator::{all_consuming, cut, map, map_res, opt};
 use nom::error::{context, convert_error, ParseError, VerboseError};
 use nom::multi::{many0, separated_list};
+use nom::number::complete::float;
 use nom::sequence::{delimited, preceded, separated_pair, terminated, tuple};
 use nom::Err;
 use nom::IResult;
@@ -171,14 +172,55 @@ fn colorset_value<'a, E: ParseError<&'a str>>(
     space0,
     alt((
       map(hex_color, ColorSetValue::Color),
+      map(rgba_color, ColorSetValue::Color),
       map(variable_identifier, ColorSetValue::Variable),
     )),
   )(input)
 }
 
+fn rgba_color<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, Color, E> {
+  let u8_value = move |input: &'a str| {
+    preceded(
+      space0,
+      cut(context(
+        "Value between 0 - 255",
+        map_res(digit1, |s: &str| s.parse::<u8>()),
+      )),
+    )(input)
+  };
+  let delimiter = move |input: &'a str| preceded(space0, cut(char(',')))(input);
+
+  context(
+    "RGBA Value",
+    map(
+      preceded(
+        tag("rgba"),
+        delimited(
+          preceded(space0, char('(')),
+          tuple((
+            terminated(u8_value, delimiter),
+            terminated(u8_value, delimiter),
+            terminated(u8_value, delimiter),
+            preceded(space0, float),
+          )),
+          preceded(space0, char(')')),
+        ),
+      ),
+      |res| {
+        let (r, g, b, a) = res;
+        Color { r, g, b, a }
+      },
+    ),
+  )(input)
+}
+
 fn hex_color<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, Color, E> {
   map(
-    tuple((tag("#"), cut(hex_value), opt(preceded(space1, alpha_value)))),
+    tuple((
+      char('#'),
+      cut(hex_value),
+      opt(preceded(space1, alpha_value)),
+    )),
     |res| {
       let (_, rgb, alpha) = res;
       let r = ((rgb >> 16) & 0xff) as u8;

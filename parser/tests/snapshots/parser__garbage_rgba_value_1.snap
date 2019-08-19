@@ -1,0 +1,20 @@
+---
+created: "2019-08-19T02:52:17.102984Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: "format!(\"{}\" , e)"
+---
+Error: 0: at line 0:
+$a: rgba(0, 127; 255, 0.5)
+               ^
+expected ',', found ;
+
+1: at line 0, in RGBA Value:
+$a: rgba(0, 127; 255, 0.5)
+    ^
+
+2: at line 0, in Variable:
+$a: rgba(0, 127; 255, 0.5)
+^
+
+
