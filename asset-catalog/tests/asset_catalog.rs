@@ -1,4 +1,4 @@
-use asset_catalog::write_asset_catalog;
+use asset_catalog::{write_asset_catalog, ColorSpace};
 use parser::parse_document;
 use tempdir::TempDir;
 
@@ -41,9 +41,55 @@ fn asset_catalog() {
     }
   "#;
 
-  let tmp_dir = TempDir::new("asset_catalog").expect("Create temp dir failed");
   let document = parse_document(contents.to_string()).expect("Could not parse document");
 
-  write_asset_catalog(&document, &tmp_dir.path(), true).expect("Could not write asset catalog");
-  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/Colors.xcassets").unwrap());
+  let tmp_dir_srgb = TempDir::new("asset_catalog_srgb").expect("Create temp dir failed");
+  write_asset_catalog(&document, &tmp_dir_srgb.path(), ColorSpace::SRGB, true)
+    .expect("Could not write asset catalog");
+  assert!(!dir_diff::is_different(&tmp_dir_srgb.path(), "tests/fixtures/SRGB.xcassets").unwrap());
+
+  let tmp_dir_display_p3 =
+    TempDir::new("asset_catalog_display_p3").expect("Create temp dir failed");
+  write_asset_catalog(
+    &document,
+    &tmp_dir_display_p3.path(),
+    ColorSpace::DisplayP3,
+    true,
+  )
+  .expect("Could not write asset catalog");
+  assert!(!dir_diff::is_different(
+    &tmp_dir_display_p3.path(),
+    "tests/fixtures/DisplayP3.xcassets"
+  )
+  .unwrap());
+
+  let tmp_dir_extended_linear_srgb =
+    TempDir::new("asset_catalog_extended_linear_srgb").expect("Create temp dir failed");
+  write_asset_catalog(
+    &document,
+    &tmp_dir_extended_linear_srgb.path(),
+    ColorSpace::ExtendedRangeLinearSRGB,
+    true,
+  )
+  .expect("Could not write asset catalog");
+  assert!(!dir_diff::is_different(
+    &tmp_dir_extended_linear_srgb.path(),
+    "tests/fixtures/ExtendedRangeLinearSRGB.xcassets"
+  )
+  .unwrap());
+
+  let tmp_dir_extended_srgb =
+    TempDir::new("asset_catalog_extended_srgb").expect("Create temp dir failed");
+  write_asset_catalog(
+    &document,
+    &tmp_dir_extended_srgb.path(),
+    ColorSpace::ExtendedRangeSRGB,
+    true,
+  )
+  .expect("Could not write asset catalog");
+  assert!(!dir_diff::is_different(
+    &tmp_dir_extended_srgb.path(),
+    "tests/fixtures/ExtendedRangeSRGB.xcassets"
+  )
+  .unwrap());
 }

@@ -1,7 +1,8 @@
-use asset_catalog::write_asset_catalog;
+use asset_catalog::{write_asset_catalog, ColorSpace};
 use clap::{App, Arg, SubCommand};
 use parser::parse_document_from_file;
 use std::path::Path;
+use std::str::FromStr;
 use swift_gen::gen_swift;
 
 fn main() {
@@ -30,6 +31,19 @@ fn main() {
             .short("f")
             .long("force")
             .help("Overwrite Asset catalog if it already exists"),
+        )
+        .arg(
+          Arg::with_name("color-space")
+            .short("cs")
+            .long("color-space")
+            .takes_value(true)
+            .possible_value("display-p3")
+            .possible_value("srgb")
+            .possible_value("extended-srgb")
+            .possible_value("extended-linear-srgb")
+            .default_value("srgb")
+            .help("Specify which colorspace to use")
+            .value_name("COLOR-SPACE"),
         ),
     )
     .subcommand(
@@ -56,6 +70,8 @@ fn main() {
     ("gen-assets", Some(m)) => {
       let input_file = m.value_of("input").unwrap();
       let output_path = m.value_of("output").unwrap();
+      let color_space =
+        ColorSpace::from_str(m.value_of("color-space").unwrap()).expect("Unknown colorspace");
 
       let doc = match parse_document_from_file(&input_file) {
         Ok(doc) => doc,
@@ -67,7 +83,12 @@ fn main() {
 
       let overwrite_asset_catalog = m.is_present("force-overwrite");
 
-      match write_asset_catalog(&doc, &Path::new(output_path), overwrite_asset_catalog) {
+      match write_asset_catalog(
+        &doc,
+        &Path::new(output_path),
+        color_space,
+        overwrite_asset_catalog,
+      ) {
         Err(asset_catalog::Error::CatalogExists(_)) => {
           println!(
             "Asset catalog at {} already exists. Use -f to overwrite it.",

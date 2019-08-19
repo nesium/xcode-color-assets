@@ -2,7 +2,7 @@
 
 # Xcode Color Assets
 
-This project allows you to create Xcode Assets catalogs for your colors. Instead of tediously creating your named colors in Xcode's UI you can create a CSS-like document and have your Asset catalog created programmatically. Specify colors in hex (with a twist, to allow specifying the alpha value in percent) and RGBA. Use variables for your colors and support dark mode. Finally, generate a corresponding Swift file to reference the created colors safely in your code.
+This project allows you to create Xcode Assets catalogs for your colors. Instead of tediously creating your named colors in Xcode's UI you can create a CSS-like document and have your Asset catalog generated programmatically. Specify colors in hex (with a twist, to allow specifying the alpha value in percent) and RGBA. Use variables for your colors and support dark mode. Finally, generate a corresponding Swift file to reference the created colors safely in your code.
 
 Turn this…
 
@@ -84,6 +84,7 @@ extension UIColor {
 Usage:
 
 ```
-$ ./xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets
+$ # Use xcode-color-assets SUBCOMMAND --help for more information
+$ ./xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets --color-space display-p3
 $ ./xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift
 ```
