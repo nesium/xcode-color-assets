@@ -38,6 +38,7 @@ jobs:
       - restore-sccache-cache
       - cargo test
       - save-sccache-cache
+
 workflows:
   version: 2
   run-tests:
