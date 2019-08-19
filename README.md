@@ -1,4 +1,6 @@
-# Color Assets
+[![CircleCI](https://circleci.com/gh/nesium/xcode-color-assets.svg?style=svg)](https://circleci.com/gh/nesium/xcode-color-assets)
+
+# Xcode Color Assets
 
 Tired of creating Color Sets in Xcode? Too much clicking, not enough typing? Missing variables?
 
