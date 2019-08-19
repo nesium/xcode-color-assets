@@ -1,6 +1,8 @@
-# Color Assets
+[![CircleCI](https://circleci.com/gh/nesium/xcode-color-assets.svg?style=svg)](https://circleci.com/gh/nesium/xcode-color-assets)
 
-Tired of creating Color Sets in Xcode? Too much clicking, not enough typing? Missing variables?
+# Xcode Color Assets
+
+This project allows you to create Xcode Assets catalogs for your colors. Instead of tediously creating your named colors in Xcode's UI you can create a CSS-like document and have your Asset catalog created programmatically. Specify colors in hex (with a twist, to allow specifying the alpha value in percent) and RGBA. Use variables for your colors and support dark mode. Finally, generate a corresponding Swift file to reference the created colors safely in your code.
 
 Turn this…
 
