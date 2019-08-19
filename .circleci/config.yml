@@ -36,7 +36,7 @@ jobs:
       - checkout
       - setup-sccache
       - restore-sccache-cache
-      - cargo test
+      - run: cargo test
       - save-sccache-cache
 
 workflows:
