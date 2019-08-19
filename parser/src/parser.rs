@@ -15,6 +15,7 @@ use nom::IResult;
 use std::fmt;
 use std::fs::File;
 use std::io::prelude::Read;
+use std::path::Path;
 use std::str;
 
 #[derive(Debug)]
@@ -97,16 +98,28 @@ pub fn parse_document(input: String) -> Result<Document, Error> {
 }
 
 pub fn parse_document_from_file(filepath: &str) -> Result<Document, Error> {
+  let path = Path::new(filepath);
+
+  if !path.exists() {
+    return Err(Error {
+      error: format!("No such file {}", filepath),
+    });
+  }
+
   let mut f = File::open(filepath).unwrap();
   let mut buffer = vec![];
   f.read_to_end(&mut buffer).unwrap();
 
   let contents = match str::from_utf8(&buffer) {
     Ok(v) => v,
-    Err(e) => panic!(
-      "Could not read contents of file {}. Reason: {}",
-      filepath, e
-    ),
+    Err(e) => {
+      return Err(Error {
+        error: format!(
+          "Could not read contents of file {}. Reason: {}",
+          filepath, e
+        ),
+      })
+    }
   };
 
   parse_document(contents.to_string())

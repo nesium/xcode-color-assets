@@ -24,6 +24,12 @@ fn main() {
             .value_name("INPUT_FILE")
             .required(true)
             .index(1),
+        )
+        .arg(
+          Arg::with_name("force-overwrite")
+            .short("f")
+            .long("force")
+            .help("Overwrite Asset catalog if it already exists"),
         ),
     )
     .subcommand(
@@ -50,20 +56,50 @@ fn main() {
     ("gen-assets", Some(m)) => {
       let input_file = m.value_of("input").unwrap();
       let output_path = m.value_of("output").unwrap();
-      match parse_document_from_file(&input_file) {
-        Ok(doc) => write_asset_catalog(&doc, &Path::new(output_path), true)
-          .expect("Could not write asset catalog."),
-        Err(e) => println!("{}", e),
+
+      let doc = match parse_document_from_file(&input_file) {
+        Ok(doc) => doc,
+        Err(e) => {
+          println!("{}", e);
+          std::process::exit(0x0100);
+        }
+      };
+
+      let overwrite_asset_catalog = m.is_present("force-overwrite");
+
+      match write_asset_catalog(&doc, &Path::new(output_path), overwrite_asset_catalog) {
+        Err(asset_catalog::Error::CatalogExists(_)) => {
+          println!(
+            "Asset catalog at {} already exists. Use -f to overwrite it.",
+            output_path
+          );
+          std::process::exit(0x0100);
+        }
+        Err(e) => {
+          println!("{}", e);
+          std::process::exit(0x0100);
+        }
+        Ok(_) => println!("Generated Asset catalog at {}.", output_path),
       }
     }
     ("gen-swift", Some(m)) => {
       let input_file = m.value_of("input").unwrap();
       let output_path = m.value_of("output").unwrap();
-      match parse_document_from_file(&input_file) {
-        Ok(doc) => {
-          gen_swift(&doc, &Path::new(output_path)).expect("Could not generate Swift code.")
+
+      let doc = match parse_document_from_file(&input_file) {
+        Ok(doc) => doc,
+        Err(e) => {
+          println!("{}", e);
+          std::process::exit(0x0100);
         }
-        Err(e) => println!("{}", e),
+      };
+
+      match gen_swift(&doc, &Path::new(output_path)) {
+        Err(e) => {
+          println!("{}", e);
+          std::process::exit(0x0100);
+        }
+        Ok(_) => println!("Generated Swift file at {}.", output_path),
       }
     }
     (&_, _) => {}

@@ -33,6 +33,8 @@ pub fn write_asset_catalog(
   if path.exists() {
     if delete_directory_if_exists {
       fs::remove_dir_all(&path).map_err(|_| Error::CouldNotRemoveDirectory(path_to_str(&path)))?;
+    } else {
+      return Err(Error::CatalogExists(path_to_str(path)));
     }
   }
   fs::create_dir_all(&path).map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&path)))?;
