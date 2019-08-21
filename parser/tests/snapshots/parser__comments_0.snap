@@ -1,5 +1,5 @@
 ---
-created: "2019-08-21T04:59:05.155347Z"
+created: "2019-08-21T04:52:52.733027Z"
 creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: doc
@@ -8,30 +8,26 @@ Document {
     items: [
         Variable(
             Declaration {
-                identifier: "var",
+                identifier: "bar",
                 value: Color(
                     Color {
                         r: 255,
                         g: 0,
-                        b: 255,
+                        b: 0,
                         a: 1.0,
                     },
                 ),
             },
         ),
-        RuleSet(
-            RuleSet {
-                identifier: "a",
-                items: [],
-            },
-        ),
-        Declaration(
+        Variable(
             Declaration {
-                identifier: "a",
-                value: Variable(
-                    Variable {
-                        identifier: "var",
-                        opacity: 1.0,
+                identifier: "foo",
+                value: Color(
+                    Color {
+                        r: 0,
+                        g: 0,
+                        b: 0,
+                        a: 1.0,
                     },
                 ),
             },

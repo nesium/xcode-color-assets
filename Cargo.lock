@@ -905,7 +905,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "xcode-color-assets"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "asset-catalog 0.1.0",
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",

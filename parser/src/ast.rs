@@ -7,7 +7,7 @@ pub struct Document {
 pub enum DocumentItem {
   Variable(Declaration<Value>),
   RuleSet(RuleSet),
-  Declaration(Declaration<Value>)
+  Declaration(Declaration<Value>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -20,15 +20,21 @@ pub struct Color {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
-  Variable(String),
+  Variable(Variable),
   Color(Color),
   ColorSet(ColorSet),
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ColorSetValue {
-  Variable(String),
+  Variable(Variable),
   Color(Color),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Variable {
+  pub identifier: String,
+  pub opacity: f32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -69,6 +75,17 @@ impl Into<Value> for ColorSetValue {
     match self {
       ColorSetValue::Color(c) => Value::Color(c),
       ColorSetValue::Variable(v) => Value::Variable(v),
+    }
+  }
+}
+
+impl Variable {
+  pub fn resolve_against(&self, color: &Color) -> Color {
+    Color {
+      r: color.r,
+      g: color.g,
+      b: color.b,
+      a: color.a * self.opacity,
     }
   }
 }

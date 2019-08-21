@@ -1,0 +1,149 @@
+---
+created: "2019-08-21T07:21:02.638249Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [
+        Variable(
+            Declaration {
+                identifier: "a",
+                value: Color(
+                    Color {
+                        r: 255,
+                        g: 0,
+                        b: 255,
+                        a: 1.0,
+                    },
+                ),
+            },
+        ),
+        Variable(
+            Declaration {
+                identifier: "b",
+                value: Color(
+                    Color {
+                        r: 255,
+                        g: 0,
+                        b: 255,
+                        a: 0.5,
+                    },
+                ),
+            },
+        ),
+        Variable(
+            Declaration {
+                identifier: "c",
+                value: Color(
+                    Color {
+                        r: 1,
+                        g: 2,
+                        b: 3,
+                        a: 0.0,
+                    },
+                ),
+            },
+        ),
+        Variable(
+            Declaration {
+                identifier: "d",
+                value: Variable(
+                    Variable {
+                        identifier: "a",
+                        opacity: 0.3,
+                    },
+                ),
+            },
+        ),
+        Variable(
+            Declaration {
+                identifier: "e",
+                value: ColorSet(
+                    ColorSet {
+                        light: Variable(
+                            Variable {
+                                identifier: "a",
+                                opacity: 1.0,
+                            },
+                        ),
+                        dark: Color(
+                            Color {
+                                r: 0,
+                                g: 255,
+                                b: 0,
+                                a: 0.33,
+                            },
+                        ),
+                    },
+                ),
+            },
+        ),
+        RuleSet(
+            RuleSet {
+                identifier: "Hello",
+                items: [
+                    Declaration(
+                        Declaration {
+                            identifier: "A",
+                            value: Variable(
+                                Variable {
+                                    identifier: "a",
+                                    opacity: 1.0,
+                                },
+                            ),
+                        },
+                    ),
+                ],
+            },
+        ),
+        RuleSet(
+            RuleSet {
+                identifier: "A",
+                items: [
+                    Declaration(
+                        Declaration {
+                            identifier: "B",
+                            value: Variable(
+                                Variable {
+                                    identifier: "e",
+                                    opacity: 1.0,
+                                },
+                            ),
+                        },
+                    ),
+                    RuleSet(
+                        RuleSet {
+                            identifier: "C",
+                            items: [
+                                Declaration(
+                                    Declaration {
+                                        identifier: "D",
+                                        value: ColorSet(
+                                            ColorSet {
+                                                light: Variable(
+                                                    Variable {
+                                                        identifier: "a",
+                                                        opacity: 1.0,
+                                                    },
+                                                ),
+                                                dark: Color(
+                                                    Color {
+                                                        r: 204,
+                                                        g: 204,
+                                                        b: 204,
+                                                        a: 1.0,
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ),
+    ],
+}

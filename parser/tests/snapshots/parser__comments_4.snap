@@ -1,0 +1,16 @@
+---
+created: "2019-08-21T06:38:26.308030Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [
+        RuleSet(
+            RuleSet {
+                identifier: "a",
+                items: [],
+            },
+        ),
+    ],
+}

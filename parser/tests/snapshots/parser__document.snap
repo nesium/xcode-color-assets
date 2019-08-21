@@ -1,5 +1,5 @@
 ---
-created: "2019-08-18T09:05:30.743021Z"
+created: "2019-08-21T04:52:52.736238Z"
 creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: doc
@@ -51,7 +51,10 @@ Document {
                 value: ColorSet(
                     ColorSet {
                         light: Variable(
-                            "white",
+                            Variable {
+                                identifier: "white",
+                                opacity: 1.0,
+                            },
                         ),
                         dark: Color(
                             Color {
@@ -136,7 +139,10 @@ Document {
                                         value: ColorSet(
                                             ColorSet {
                                                 light: Variable(
-                                                    "red",
+                                                    Variable {
+                                                        identifier: "red",
+                                                        opacity: 1.0,
+                                                    },
                                                 ),
                                                 dark: Color(
                                                     Color {

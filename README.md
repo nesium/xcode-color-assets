@@ -7,16 +7,21 @@ This project allows you to create Xcode Assets catalogs for your colors. Instead
 Turn this…
 
 ```
+// Basic colors
 $white: #ffffff
 $black: #000000
+$black50: #000000 50%
 $classic: (light: $black, dark: $white)
 
+// Accent colors
 $brightAccent: #5753CF
 $mediumBright: rgba(25, 200, 255, 1)
 $mediumBrightHighlight: #70D1FA
 
+// Greys
 $grey1: $black
 
+// Declarations
 Text {
   Primary: (light: #151618, dark: #E7E8EA)
   Secondary: (light: $grey1, dark: #85868A)
@@ -28,7 +33,7 @@ NumericInput {
   NumericKey {
     Background: (light: $white, dark: #434343)
     Highlight: (light: #C4CCDA, dark: #666666)
-    Shadow: (light: #848587, dark: $black)
+    Shadow: (light: #848587, dark: $black50 50%) // Apply alpha to variables
     Text: $classic
   }
 
@@ -82,6 +87,7 @@ extension UIColor {
 ```
 
 ### Installation via Homebrew
+
 `brew install nesium/tools/xcode-color-assets`
 
 ### Usage
