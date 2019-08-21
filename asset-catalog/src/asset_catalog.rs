@@ -2,6 +2,7 @@ use super::ColorSpace;
 use super::Error;
 use parser::ast::{
   Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
+  Variable,
 };
 use serde_json::json;
 use std::collections::HashMap;
@@ -17,7 +18,7 @@ fn path_to_str(path: &Path) -> String {
 }
 
 enum ResolvedVariable<'a> {
-  Color(&'a Color),
+  Color(Color),
   ColorSet(&'a ColorSet),
 }
 
@@ -27,14 +28,14 @@ struct Config<'a> {
 }
 
 impl<'a> Config<'a> {
-  fn resolve_variable(&self, identifier: &str) -> Result<ResolvedVariable<'a>, Error> {
-    let value = match self.var_lookup.get(identifier) {
+  fn resolve_variable(&self, variable: &Variable) -> Result<ResolvedVariable<'a>, Error> {
+    let value = match self.var_lookup.get(&variable.identifier) {
       Some(value) => value,
-      None => return Err(Error::UnknownIdentifier(identifier.to_string())),
+      None => return Err(Error::UnknownIdentifier(variable.identifier.to_string())),
     };
     match value {
       Value::Variable(identifier) => self.resolve_variable(identifier),
-      Value::Color(color) => Ok(ResolvedVariable::Color(color)),
+      Value::Color(color) => Ok(ResolvedVariable::Color(variable.resolve_against(color))),
       Value::ColorSet(colorset) => Ok(ResolvedVariable::ColorSet(colorset)),
     }
   }
@@ -187,20 +188,24 @@ fn write_declaration(
   let append_colorset =
     |value: &mut serde_json::value::Value, colorset: &ColorSet| -> Result<(), Error> {
       match colorset.light {
-        ColorSetValue::Variable(ref identifier) => match config.resolve_variable(identifier)? {
-          ResolvedVariable::Color(color) => append_light_color(value, color)?,
+        ColorSetValue::Variable(ref variable) => match config.resolve_variable(variable)? {
+          ResolvedVariable::Color(color) => append_light_color(value, &color)?,
           ResolvedVariable::ColorSet(_) => {
-            return Err(Error::AssignColorSetToLightProperty(identifier.to_string()))
+            return Err(Error::AssignColorSetToLightProperty(
+              variable.identifier.to_string(),
+            ))
           }
         },
         ColorSetValue::Color(ref color) => append_light_color(value, color)?,
       }
 
       match colorset.dark {
-        ColorSetValue::Variable(ref identifier) => match config.resolve_variable(identifier)? {
-          ResolvedVariable::Color(color) => append_dark_color(value, color)?,
+        ColorSetValue::Variable(ref variable) => match config.resolve_variable(variable)? {
+          ResolvedVariable::Color(color) => append_dark_color(value, &color)?,
           ResolvedVariable::ColorSet(_) => {
-            return Err(Error::AssignColorSetToDarkProperty(identifier.to_string()))
+            return Err(Error::AssignColorSetToDarkProperty(
+              variable.identifier.to_string(),
+            ))
           }
         },
         ColorSetValue::Color(ref color) => append_dark_color(value, color)?,
@@ -211,7 +216,7 @@ fn write_declaration(
 
   match declaration.value {
     Value::Variable(ref identifier) => match config.resolve_variable(identifier)? {
-      ResolvedVariable::Color(color) => append_light_color(&mut info, color)?,
+      ResolvedVariable::Color(color) => append_light_color(&mut info, &color)?,
       ResolvedVariable::ColorSet(colorset) => append_colorset(&mut info, colorset)?,
     },
     Value::Color(ref color) => append_light_color(&mut info, color)?,

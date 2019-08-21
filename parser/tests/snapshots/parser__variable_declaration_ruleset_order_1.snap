@@ -1,5 +1,5 @@
 ---
-created: "2019-08-18T07:34:01.892602Z"
+created: "2019-08-21T04:52:52.740164Z"
 creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: doc
@@ -10,7 +10,10 @@ Document {
             Declaration {
                 identifier: "a",
                 value: Variable(
-                    "var",
+                    Variable {
+                        identifier: "var",
+                        opacity: 1.0,
+                    },
                 ),
             },
         ),

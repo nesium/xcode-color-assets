@@ -65,6 +65,7 @@ fn color_variables() {
   test_parse_doc("color_variables_5", "$a: rgba(0, 127, 255, 0.5)");
   test_parse_doc("color_variables_6", "$a: rgba (0, 127, 255, 0.5)");
   test_parse_doc("color_variables_7", "$a: (light: #ff00ff, dark: #00ff00)");
+  test_parse_doc("color_variables_8", "$a: $b 50%");
 }
 
 #[test]
@@ -80,6 +81,105 @@ fn garbage_rgba_values() {
   test_parse_doc("garbage_rgba_value_1", "$a: rgba(0, 127; 255, 0.5)");
   test_parse_doc("garbage_rgba_value_2", "$a: rgba0, 127, 255, 0.5)");
   test_parse_doc("garbage_rgba_value_3", "$a: rgba(0, 300, 255, 0.5)")
+}
+
+#[test]
+fn comments() {
+  test_parse_doc(
+    "comments_0",
+    r#"
+    $bar: #ff0000 // red
+    $foo: #000000
+  "#,
+  );
+  test_parse_doc("comments_1", "$foo: #000000 // black");
+  test_parse_doc(
+    "comments_2",
+    r#"
+    // red
+    $bar: #0000ff
+  "#,
+  );
+  test_parse_doc(
+    "comments_3",
+    r#"
+    $bar: #0000ff
+    // red
+  "#,
+  );
+  test_parse_doc("comments_4", "a {} // test");
+  test_parse_doc(
+    "comments_5",
+    r#"
+    a { b {} // test
+    }
+  "#,
+  );
+  test_parse_doc(
+    "comments_6",
+    r#"
+    a {
+      // test
+    }
+  "#,
+  );
+  test_parse_doc(
+    "comments_7",
+    r#"
+    $a: #ff00ff
+    // test
+    // test
+    $b: #ff00ff
+  "#,
+  );
+  test_parse_doc(
+    "comments_8",
+    r#"
+    // test
+    // test
+    $a: #ff00ff
+  "#,
+  );
+  test_parse_doc(
+    "comments_9",
+    r#"
+    // test
+    // test
+
+    // test
+
+    // test
+    // test
+    $a: #ff00ff
+  "#,
+  );
+  test_parse_doc(
+    "comments_10",
+    r#"
+    // 1
+    $a: #ff00ff // 2
+    $b: #ff00ff 50% // 3
+    $c: rgba(1, 2, 3, 0.0) // 4
+    $d: $a 30% // 5
+    $e: (light: $a, dark: #00ff00 33%) // 6
+
+    Hello { // test
+    // test
+      A: $a
+    }
+
+    // 7
+    A { // 8
+      // 9
+      B: $e // 10
+      // 11
+      C { // 12
+        D: (light: $a, dark: #cccccc) // 13
+      } // 14
+      // 15
+    } // 16
+  "#,
+  );
 }
 
 #[test]

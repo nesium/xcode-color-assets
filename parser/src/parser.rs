@@ -1,9 +1,12 @@
 use super::ast::{
   Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
+  Variable,
 };
 use nom::branch::alt;
 use nom::bytes::complete::{tag, take_while_m_n};
-use nom::character::complete::{alphanumeric1, char, digit1, multispace0, newline, space0, space1};
+use nom::character::complete::{
+  alphanumeric1, char, digit1, multispace0, newline, not_line_ending, space0, space1,
+};
 use nom::combinator::{all_consuming, cut, map, map_res, opt};
 use nom::error::{context, convert_error, ParseError, VerboseError};
 use nom::multi::{many0, separated_list};
@@ -61,17 +64,13 @@ fn colorset_from_declarations(
   }
 }
 
-fn line_delimiter<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, char, E> {
-  cut(terminated(preceded(space0, newline), multispace0))(input)
-}
-
 pub fn parse_document(input: String) -> Result<Document, Error> {
   let mut modified_input = input;
   modified_input.push_str("\n");
 
   let result: IResult<&str, Document, VerboseError<&str>> = map(
     all_consuming(delimited(
-      multispace0,
+      multiline_whitespace,
       separated_list(
         line_delimiter,
         alt((
@@ -80,7 +79,7 @@ pub fn parse_document(input: String) -> Result<Document, Error> {
           map(declaration(value), DocumentItem::Declaration),
         )),
       ),
-      multispace0,
+      multiline_whitespace,
     )),
     |res| Document { items: res },
   )(&modified_input);
@@ -125,10 +124,34 @@ pub fn parse_document_from_file(filepath: &str) -> Result<Document, Error> {
   parse_document(contents.to_string())
 }
 
-pub fn ruleset<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, RuleSet, E> {
+fn single_line_comment<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, &str, E> {
+  context("Single Line Comment", preceded(tag("//"), not_line_ending))(input)
+}
+
+fn line_delimiter<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, char, E> {
+  cut(preceded(
+    space0,
+    preceded(
+      opt(single_line_comment),
+      terminated(newline, multiline_whitespace),
+    ),
+  ))(input)
+}
+
+fn multiline_whitespace<'a, E: ParseError<&'a str>>(
+  input: &'a str,
+) -> IResult<&'a str, Vec<&str>, E> {
+  delimited(
+    multispace0,
+    separated_list(terminated(newline, multispace0), single_line_comment),
+    multispace0,
+  )(input)
+}
+
+fn ruleset<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, RuleSet, E> {
   let body = |input| {
     delimited(
-      terminated(char('{'), multispace0),
+      terminated(char('{'), multiline_whitespace),
       cut(many0(terminated(
         alt((
           map(ruleset, RuleSetItem::RuleSet),
@@ -136,7 +159,7 @@ pub fn ruleset<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, R
         )),
         line_delimiter,
       ))),
-      preceded(multispace0, char('}')),
+      preceded(multiline_whitespace, char('}')),
     )(input)
   };
 
@@ -149,9 +172,7 @@ pub fn ruleset<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, R
   )(input)
 }
 
-pub fn variable<'a, E: ParseError<&'a str>>(
-  input: &'a str,
-) -> IResult<&'a str, Declaration<Value>, E> {
+fn variable<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, Declaration<Value>, E> {
   context(
     "Variable",
     map(
@@ -186,7 +207,7 @@ fn colorset_value<'a, E: ParseError<&'a str>>(
     alt((
       map(hex_color, ColorSetValue::Color),
       map(rgba_color, ColorSetValue::Color),
-      map(variable_identifier, ColorSetValue::Variable),
+      map(variable_value, ColorSetValue::Variable),
     )),
   )(input)
 }
@@ -281,6 +302,19 @@ pub fn variable_identifier<'a, E: ParseError<&'a str>>(
       preceded(space0, preceded(char('$'), alphanumeric1)),
       |ident: &str| ident.to_string(),
     ),
+  )(input)
+}
+
+pub fn variable_value<'a, E: ParseError<&'a str>>(input: &'a str) -> IResult<&'a str, Variable, E> {
+  map(
+    tuple((variable_identifier, opt(preceded(space1, alpha_value)))),
+    |res| {
+      let (identifier, opacity) = res;
+      Variable {
+        identifier,
+        opacity: opacity.unwrap_or(1.0),
+      }
+    },
   )(input)
 }
 

@@ -1,0 +1,23 @@
+---
+created: "2019-08-21T07:20:51.408238Z"
+creator: insta@0.10.1
+source: parser/tests/parser.rs
+expression: doc
+---
+Document {
+    items: [
+        Variable(
+            Declaration {
+                identifier: "a",
+                value: Color(
+                    Color {
+                        r: 255,
+                        g: 0,
+                        b: 255,
+                        a: 1.0,
+                    },
+                ),
+            },
+        ),
+    ],
+}

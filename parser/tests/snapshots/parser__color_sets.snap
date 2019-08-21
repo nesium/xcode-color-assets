@@ -1,5 +1,5 @@
 ---
-created: "2019-08-19T03:06:36.783580Z"
+created: "2019-08-21T04:52:52.735969Z"
 creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: doc
@@ -70,7 +70,10 @@ Document {
                             },
                         ),
                         dark: Variable(
-                            "applicationBackgroundLight",
+                            Variable {
+                                identifier: "applicationBackgroundLight",
+                                opacity: 1.0,
+                            },
                         ),
                     },
                 ),
