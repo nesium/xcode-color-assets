@@ -115,7 +115,7 @@ fn main() {
         }
       };
 
-      match gen_swift(&doc, &Path::new(output_path)) {
+      match gen_swift(&doc, &Path::new(output_path), false) {
         Err(e) => {
           println!("{}", e);
           std::process::exit(0x0100);

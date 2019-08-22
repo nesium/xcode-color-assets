@@ -1,9 +1,53 @@
-use parser::parse_document;
-use swift_gen::gen_swift;
+use parser::{ast::Document, parse_document};
+use std::path::Path;
+use swift_gen::{gen_swift, Error};
 use tempdir::TempDir;
 
 #[test]
-fn asset_catalog() {
+fn generate_swift_file() {
+  let tmp_dir = TempDir::new("generate_swift_file").expect("Create temp dir failed");
+
+  gen_swift(
+    &test_document(),
+    &tmp_dir.path().join("UIColor+Custom.swift"),
+    true,
+  )
+  .expect("Could not write Swift file");
+  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures").unwrap());
+}
+
+#[test]
+fn do_not_touch_identical_file() {
+  let tmp_dir = TempDir::new("do_not_touch_identical_file").expect("Create temp dir failed");
+  let fixture_path = "tests/fixtures/UIColor+Custom.swift";
+  let tmp_path = tmp_dir.path().join("UIColor+Custom.swift");
+
+  std::fs::copy(&fixture_path, &tmp_path).expect("Could not copy file");
+  assert!(
+    is_modification_date_equal(&fixture_path, &tmp_path),
+    "Expected modification date to be equal after copy."
+  );
+
+  match gen_swift(&test_document(), &tmp_path, false) {
+    Err(Error::FileIsIdentical(path)) => {
+      assert_eq!(std::path::Path::new(&path), tmp_path);
+      assert!(
+        is_modification_date_equal(&fixture_path, &tmp_path),
+        "Expected modification date to be equal after swift_gen"
+      );
+    }
+    Err(Error::IO(msg)) => panic!("Unexpected error {}", msg),
+    Ok(()) => panic!("Expected Err, got Ok"),
+  }
+
+  gen_swift(&test_document(), &tmp_path, true).expect("Could not write Swift file");
+  assert!(
+    !is_modification_date_equal(&fixture_path, &tmp_path),
+    "Expected modification date to differ after swift_gen"
+  );
+}
+
+fn test_document() -> Document {
   let contents = r#"
     $white: #ffffff
     $black: #000000
@@ -41,10 +85,17 @@ fn asset_catalog() {
     }
   "#;
 
-  let tmp_dir = TempDir::new("swift_gen").expect("Create temp dir failed");
-  let document = parse_document(contents.to_string()).expect("Could not parse document");
+  parse_document(contents.to_string()).expect("Could not parse document")
+}
 
-  gen_swift(&document, &tmp_dir.path().join("UIColor+Custom.swift"))
-    .expect("Could not write Swift file");
-  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures").unwrap());
+fn is_modification_date_equal<P1: AsRef<Path>, P2: AsRef<Path>>(p1: P1, p2: P2) -> bool {
+  let old_metadata = std::fs::metadata(p1).expect("Could not read metadata of file 1");
+  let new_metadata = std::fs::metadata(p2).expect("Could not read metadata of file 2");
+
+  old_metadata
+    .modified()
+    .expect("Could not retrieve modification date of file 1")
+    == new_metadata
+      .modified()
+      .expect("Could not retrieve modification date of file 2")
 }
