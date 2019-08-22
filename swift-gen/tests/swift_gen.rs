@@ -1,5 +1,7 @@
 use parser::{ast::Document, parse_document};
+use std::fs;
 use std::path::Path;
+use std::process::Command;
 use swift_gen::{gen_swift, Error};
 use tempdir::TempDir;
 
@@ -22,7 +24,13 @@ fn do_not_touch_identical_file() {
   let fixture_path = "tests/fixtures/UIColor+Custom.swift";
   let tmp_path = tmp_dir.path().join("UIColor+Custom.swift");
 
-  std::fs::copy(&fixture_path, &tmp_path).expect("Could not copy file");
+  Command::new("cp")
+    .arg("-p")
+    .arg(fs::canonicalize(&fixture_path).expect("Could not resolve fixture path"))
+    .arg(&tmp_path)
+    .output()
+    .expect("Could not copy file");
+
   assert!(
     is_modification_date_equal(&fixture_path, &tmp_path),
     "Expected modification date to be equal after copy."
@@ -42,7 +50,7 @@ fn do_not_touch_identical_file() {
 
   gen_swift(&test_document(), &tmp_path, true).expect("Could not write Swift file");
   assert!(
-    !is_modification_date_equal(&fixture_path, &tmp_path),
+    !is_modification_date_equal(&tmp_path, &fixture_path),
     "Expected modification date to differ after swift_gen"
   );
 }
@@ -89,13 +97,20 @@ fn test_document() -> Document {
 }
 
 fn is_modification_date_equal<P1: AsRef<Path>, P2: AsRef<Path>>(p1: P1, p2: P2) -> bool {
-  let old_metadata = std::fs::metadata(p1).expect("Could not read metadata of file 1");
-  let new_metadata = std::fs::metadata(p2).expect("Could not read metadata of file 2");
+  let old_metadata = fs::metadata(p1).expect("Could not read metadata of file 1");
+  let new_metadata = fs::metadata(p2).expect("Could not read metadata of file 2");
 
-  old_metadata
+  let old_modification_date = old_metadata
     .modified()
-    .expect("Could not retrieve modification date of file 1")
-    == new_metadata
-      .modified()
-      .expect("Could not retrieve modification date of file 2")
+    .expect("Could not retrieve modification date of file 1");
+  let new_modification_date = new_metadata
+    .modified()
+    .expect("Could not retrieve modification date of file 2");
+
+  let duration = old_modification_date
+    .duration_since(new_modification_date)
+    .expect("Could not retrieve duration between to modification dates");
+
+  // The timestamp might lose precision in the nano seconds area, so let's compare milliseconds.
+  duration.as_millis() == 0
 }
