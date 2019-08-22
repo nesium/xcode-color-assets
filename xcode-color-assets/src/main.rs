@@ -7,7 +7,7 @@ use swift_gen::gen_swift;
 
 fn main() {
   let matches = App::new("xcode-color-assets")
-    .version("0.3.0")
+    .version("0.3.1")
     .about("Create Xcode Asset Catalog with colors for light & dark mode.")
     .subcommand(
       SubCommand::with_name("gen-assets")
@@ -115,7 +115,7 @@ fn main() {
         }
       };
 
-      match gen_swift(&doc, &Path::new(output_path)) {
+      match gen_swift(&doc, &Path::new(output_path), false) {
         Err(e) => {
           println!("{}", e);
           std::process::exit(0x0100);

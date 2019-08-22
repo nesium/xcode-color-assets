@@ -58,8 +58,8 @@ pub fn write_asset_catalog(
     .collect();
 
   let config = Config {
-    color_space: color_space,
-    var_lookup: var_lookup,
+    color_space,
+    var_lookup,
   };
 
   if path.exists() {

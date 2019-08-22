@@ -25,10 +25,10 @@ impl FromStr for ColorSpace {
 impl ToString for ColorSpace {
   fn to_string(&self) -> String {
     match self {
-      ColorSpace::DisplayP3 => "display-p3".to_string(),
-      ColorSpace::SRGB => "srgb".to_string(),
-      ColorSpace::ExtendedRangeSRGB => "extended-srgb".to_string(),
-      ColorSpace::ExtendedRangeLinearSRGB => "extended-linear-srgb".to_string(),
+      Self::DisplayP3 => "display-p3".to_string(),
+      Self::SRGB => "srgb".to_string(),
+      Self::ExtendedRangeSRGB => "extended-srgb".to_string(),
+      Self::ExtendedRangeLinearSRGB => "extended-linear-srgb".to_string(),
     }
   }
 }

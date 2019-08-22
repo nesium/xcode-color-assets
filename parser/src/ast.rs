@@ -64,7 +64,7 @@ pub enum RuleSetItem {
 impl Into<Option<Color>> for Value {
   fn into(self) -> Option<Color> {
     match self {
-      Value::Color(c) => Some(c),
+      Self::Color(c) => Some(c),
       _ => None,
     }
   }
@@ -73,8 +73,8 @@ impl Into<Option<Color>> for Value {
 impl Into<Value> for ColorSetValue {
   fn into(self) -> Value {
     match self {
-      ColorSetValue::Color(c) => Value::Color(c),
-      ColorSetValue::Variable(v) => Value::Variable(v),
+      Self::Color(c) => Value::Color(c),
+      Self::Variable(v) => Value::Variable(v),
     }
   }
 }
