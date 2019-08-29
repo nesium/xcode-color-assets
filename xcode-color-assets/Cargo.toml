@@ -1,11 +1,13 @@
 [package]
 name = "xcode-color-assets"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["mb <mb@nesium.com>"]
 edition = "2018"
+description = "Create (dark mode compatible) color assets for Xcode programmatically from a CSS-like textfile"
 
 [dependencies]
 clap = "2.33"
+colored = "1.8"
 parser = { path = "../parser" }
 asset-catalog = { path = "../asset-catalog" }
 swift-gen = { path = "../swift-gen" }

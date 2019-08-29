@@ -1,14 +1,20 @@
 use asset_catalog::{write_asset_catalog, ColorSpace};
-use clap::{App, Arg, SubCommand};
+use clap::{crate_description, crate_name, crate_version, App, AppSettings, Arg, SubCommand};
+use colored::*;
 use parser::parse_document_from_file;
 use std::path::Path;
 use std::str::FromStr;
 use swift_gen::gen_swift;
 
 fn main() {
-  let matches = App::new("xcode-color-assets")
-    .version("0.3.1")
-    .about("Create Xcode Asset Catalog with colors for light & dark mode.")
+  let matches = App::new(crate_name!())
+    .version(crate_version!())
+    .about(crate_description!())
+    .global_setting(AppSettings::ColorAuto)
+    .global_setting(AppSettings::ColoredHelp)
+    .global_setting(AppSettings::DeriveDisplayOrder)
+    .global_setting(AppSettings::UnifiedHelpMessage)
+    .setting(AppSettings::SubcommandRequiredElseHelp)
     .subcommand(
       SubCommand::with_name("gen-assets")
         .about("generates the Asset Catalog")
@@ -76,7 +82,7 @@ fn main() {
       let doc = match parse_document_from_file(&input_file) {
         Ok(doc) => doc,
         Err(e) => {
-          println!("{}", e);
+          println!("{}", format!("{}", e).red());
           std::process::exit(0x0100);
         }
       };
@@ -91,16 +97,23 @@ fn main() {
       ) {
         Err(asset_catalog::Error::CatalogExists(_)) => {
           println!(
-            "Asset catalog at {} already exists. Use -f to overwrite it.",
-            output_path
+            "{}",
+            format!(
+              "Asset catalog at {} already exists. Use -f to overwrite it.",
+              output_path
+            )
+            .yellow()
           );
           std::process::exit(0x0100);
         }
         Err(e) => {
-          println!("{}", e);
+          println!("{}", format!("{}", e).red());
           std::process::exit(0x0100);
         }
-        Ok(_) => println!("Generated Asset catalog at {}.", output_path),
+        Ok(_) => println!(
+          "{}",
+          format!("Generated Asset catalog at {}.", output_path).green()
+        ),
       }
     }
     ("gen-swift", Some(m)) => {
@@ -110,17 +123,21 @@ fn main() {
       let doc = match parse_document_from_file(&input_file) {
         Ok(doc) => doc,
         Err(e) => {
-          println!("{}", e);
+          println!("{}", format!("{}", e).red());
           std::process::exit(0x0100);
         }
       };
 
       match gen_swift(&doc, &Path::new(output_path), false) {
+        Err(e @ swift_gen::Error::FileIsIdentical(_)) => println!("{}", format!("{}", e).dimmed()),
         Err(e) => {
-          println!("{}", e);
+          println!("{}", format!("{}", e).red());
           std::process::exit(0x0100);
         }
-        Ok(_) => println!("Generated Swift file at {}.", output_path),
+        Ok(_) => println!(
+          "{}",
+          format!("Generated Swift file at {}.", output_path).green()
+        ),
       }
     }
     (&_, _) => {}
