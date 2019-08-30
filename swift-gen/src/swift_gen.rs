@@ -1,15 +1,29 @@
 use super::renderers::{
-  data::RuleSet as RendererRuleSet, ColorSetRenderer, Renderer, RendererConfig, DynamicColorRenderer
+  data::RuleSet as RendererRuleSet, ColorSetRenderer, DynamicColorRenderer, Renderer,
+  RendererConfig,
 };
 use super::Error;
 use parser::ast::Document;
 use std::fs;
 use std::io::prelude::Read;
 use std::path::Path;
+use std::str::FromStr;
 
 pub enum RenderMode {
   ColorSet,
   DynamicColor,
+}
+
+impl FromStr for RenderMode {
+  type Err = ();
+
+  fn from_str(s: &str) -> Result<RenderMode, ()> {
+    match s.to_lowercase().as_ref() {
+      "asset-catalog" => Ok(RenderMode::ColorSet),
+      "dynamic-color" => Ok(RenderMode::DynamicColor),
+      _ => Err(()),
+    }
+  }
 }
 
 pub fn gen_swift(
@@ -24,8 +38,8 @@ pub fn gen_swift(
   let config = RendererConfig::new("  ");
 
   let renderer: Box<dyn Renderer> = match mode {
-    RenderMode::ColorSet => Box::new(ColorSetRenderer {}), 
-    RenderMode::DynamicColor => Box::new(DynamicColorRenderer {})
+    RenderMode::ColorSet => Box::new(ColorSetRenderer {}),
+    RenderMode::DynamicColor => Box::new(DynamicColorRenderer {}),
   };
   renderer.render_into(&root, &mut contents, &config);
 
