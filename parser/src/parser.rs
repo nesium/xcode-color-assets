@@ -2,6 +2,7 @@ use super::ast::{
   Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
   Variable,
 };
+use super::error::Error;
 use nom::branch::alt;
 use nom::bytes::complete::{tag, take_while_m_n};
 use nom::character::complete::{
@@ -15,28 +16,10 @@ use nom::sequence::{delimited, preceded, separated_pair, terminated, tuple};
 use nom::Err;
 use nom::IResult;
 
-use std::fmt;
 use std::fs::File;
 use std::io::prelude::Read;
 use std::path::Path;
 use std::str;
-
-#[derive(Debug)]
-pub struct Error {
-  error: String,
-}
-
-impl std::error::Error for Error {
-  fn description(&self) -> &str {
-    &self.error
-  }
-}
-
-impl fmt::Display for Error {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "Error: {}", self.error)
-  }
-}
 
 fn parse_hex_value(input: &str) -> Result<u32, std::num::ParseIntError> {
   u32::from_str_radix(input, 16)
@@ -55,12 +38,10 @@ fn colorset_from_declarations(
       light: decl2.value,
       dark: decl1.value,
     }),
-    _ => Err(Error {
-      error: format!(
-        "Expected light & dark properties. Found {}, {}.",
-        decl1.identifier, decl2.identifier
-      ),
-    }),
+    _ => Err(Error::new(format!(
+      "Expected light & dark properties. Found {}, {}.",
+      decl1.identifier, decl2.identifier
+    ))),
   }
 }
 
@@ -86,9 +67,9 @@ pub fn parse_document(input: String) -> Result<Document, Error> {
 
   match result {
     Ok((_, doc)) => Ok(doc),
-    Err(Err::Error(e)) | Err(Err::Failure(e)) => Err(Error {
-      error: convert_error(&modified_input, e).replace("'\n'", "'\\n'"),
-    }),
+    Err(Err::Error(e)) | Err(Err::Failure(e)) => Err(Error::new(
+      convert_error(&modified_input, e).replace("'\n'", "'\\n'"),
+    )),
     _ => {
       eprintln!("An unknown error occurred.");
       std::process::exit(0x0100)
@@ -100,9 +81,7 @@ pub fn parse_document_from_file(filepath: &str) -> Result<Document, Error> {
   let path = Path::new(filepath);
 
   if !path.exists() {
-    return Err(Error {
-      error: format!("No such file {}", filepath),
-    });
+    return Err(Error::new(format!("No such file {}", filepath)));
   }
 
   let mut f = File::open(filepath).unwrap();
@@ -112,12 +91,10 @@ pub fn parse_document_from_file(filepath: &str) -> Result<Document, Error> {
   let contents = match str::from_utf8(&buffer) {
     Ok(v) => v,
     Err(e) => {
-      return Err(Error {
-        error: format!(
-          "Could not read contents of file {}. Reason: {}",
-          filepath, e
-        ),
-      })
+      return Err(Error::new(format!(
+        "Could not read contents of file {}. Reason: {}",
+        filepath, e
+      )))
     }
   };
 

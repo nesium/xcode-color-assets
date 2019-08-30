@@ -6,9 +6,7 @@ pub enum Error {
   CouldNotCreateFile(String),
   CouldNotCreateDirectory(String),
   CouldNotRemoveDirectory(String),
-  UnknownIdentifier(String),
-  AssignColorSetToLightProperty(String),
-  AssignColorSetToDarkProperty(String),
+  VariableLookupFailure(String),
 }
 
 impl fmt::Display for Error {
@@ -22,18 +20,15 @@ impl fmt::Display for Error {
       Self::CouldNotRemoveDirectory(path) => {
         format!("Could not remove directory at path {}.", path)
       }
-      Self::UnknownIdentifier(identifier) => {
-        format!("Could not find variable with identifier {}.", identifier)
-      }
-      Self::AssignColorSetToLightProperty(identifier) => format!(
-        "Attempt to assign a colorset to the light property of another colorset via variable {}.",
-        identifier
-      ),
-      Self::AssignColorSetToDarkProperty(identifier) => format!(
-        "Attempt to assign a colorset to the dark property of another colorset via variable {}.",
-        identifier
-      ),
+      Self::VariableLookupFailure(message) => message.to_string(),
     };
     write!(f, "Error: {}", message)
+  }
+}
+
+impl From<parser::Error> for Error {
+  fn from(error: parser::Error) -> Self {
+    use std::error::Error;
+    Self::VariableLookupFailure(error.description().to_string())
   }
 }

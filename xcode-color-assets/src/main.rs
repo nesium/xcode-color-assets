@@ -4,7 +4,7 @@ use colored::*;
 use parser::parse_document_from_file;
 use std::path::Path;
 use std::str::FromStr;
-use swift_gen::gen_swift;
+use swift_gen::{gen_swift, RenderMode};
 
 fn main() {
   let matches = App::new(crate_name!())
@@ -128,7 +128,12 @@ fn main() {
         }
       };
 
-      match gen_swift(&doc, &Path::new(output_path), false) {
+      match gen_swift(
+        &doc,
+        &Path::new(output_path),
+        RenderMode::DynamicColor,
+        false,
+      ) {
         Err(e @ swift_gen::Error::FileIsIdentical(_)) => println!("{}", format!("{}", e).dimmed()),
         Err(e) => {
           println!("{}", format!("{}", e).red());
