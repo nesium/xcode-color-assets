@@ -103,7 +103,7 @@ impl Color {
   }
 }
 
-impl<'a, 'b> ColorSetMap<'a> {
+impl<'a> ColorSetMap<'a> {
   fn new() -> Self {
     ColorSetMap {
       map: HashMap::new(),
