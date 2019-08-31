@@ -2,26 +2,41 @@ use parser::{ast::Document, parse_document};
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use swift_gen::{gen_swift, Error};
+use swift_gen::{gen_swift, Error, RenderMode};
 use tempdir::TempDir;
 
 #[test]
-fn generate_swift_file() {
+fn generate_swift_colorset_file() {
   let tmp_dir = TempDir::new("generate_swift_file").expect("Create temp dir failed");
 
   gen_swift(
     &test_document(),
     &tmp_dir.path().join("UIColor+Custom.swift"),
+    RenderMode::ColorSet,
     true,
   )
   .expect("Could not write Swift file");
-  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures").unwrap());
+  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/colorset").unwrap());
+}
+
+#[test]
+fn generate_swift_dynamic_color_file() {
+  let tmp_dir = TempDir::new("generate_swift_file").expect("Create temp dir failed");
+
+  gen_swift(
+    &test_document(),
+    &tmp_dir.path().join("UIColor+Custom.swift"),
+    RenderMode::DynamicColor,
+    true,
+  )
+  .expect("Could not write Swift file");
+  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/dynamic_color").unwrap());
 }
 
 #[test]
 fn do_not_touch_identical_file() {
   let tmp_dir = TempDir::new("do_not_touch_identical_file").expect("Create temp dir failed");
-  let fixture_path = "tests/fixtures/UIColor+Custom.swift";
+  let fixture_path = "tests/fixtures/colorset/UIColor+Custom.swift";
   let tmp_path = tmp_dir.path().join("UIColor+Custom.swift");
 
   Command::new("cp")
@@ -36,7 +51,7 @@ fn do_not_touch_identical_file() {
     "Expected modification date to be equal after copy."
   );
 
-  match gen_swift(&test_document(), &tmp_path, false) {
+  match gen_swift(&test_document(), &tmp_path, RenderMode::ColorSet, false) {
     Err(Error::FileIsIdentical(path)) => {
       assert_eq!(std::path::Path::new(&path), tmp_path);
       assert!(
@@ -44,11 +59,13 @@ fn do_not_touch_identical_file() {
         "Expected modification date to be equal after swift_gen"
       );
     }
+    Err(Error::VariableLookupFailure(msg)) => panic!("{}", msg),
     Err(Error::IO(msg)) => panic!("Unexpected error {}", msg),
     Ok(()) => panic!("Expected Err, got Ok"),
   }
 
-  gen_swift(&test_document(), &tmp_path, true).expect("Could not write Swift file");
+  gen_swift(&test_document(), &tmp_path, RenderMode::ColorSet, true)
+    .expect("Could not write Swift file");
   assert!(
     !is_modification_date_equal(&tmp_path, &fixture_path),
     "Expected modification date to differ after swift_gen"
@@ -85,7 +102,7 @@ fn test_document() -> Document {
       DoneKey {
         Background: (light: $mediumBright, dark: $brightAccent)
         Highlight: (light: $mediumBrightHighlight, dark: rgba(103, 122, 219, 1))
-        Shadow: (light: #6E7073, dark: $black)
+        Shadow: #6E7073
         Text: $classic
       }
 

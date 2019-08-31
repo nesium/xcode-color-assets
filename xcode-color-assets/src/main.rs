@@ -4,7 +4,7 @@ use colored::*;
 use parser::parse_document_from_file;
 use std::path::Path;
 use std::str::FromStr;
-use swift_gen::gen_swift;
+use swift_gen::{gen_swift, RenderMode};
 
 fn main() {
   let matches = App::new(crate_name!())
@@ -68,6 +68,17 @@ fn main() {
             .value_name("INPUT_FILE")
             .required(true)
             .index(1),
+        )
+        .arg(
+          Arg::with_name("mode")
+            .short("m")
+            .long("mode")
+            .takes_value(true)
+            .possible_value("asset-catalog")
+            .possible_value("dynamic-color")
+            .default_value("asset-catalog")
+            .help("Specify if the generated code should reference the asset catalog or create dynamic colors programmatically")
+            .value_name("MODE"),
         ),
     )
     .get_matches();
@@ -119,6 +130,8 @@ fn main() {
     ("gen-swift", Some(m)) => {
       let input_file = m.value_of("input").unwrap();
       let output_path = m.value_of("output").unwrap();
+      let render_mode =
+        RenderMode::from_str(m.value_of("mode").unwrap()).expect("Unknown render mode");
 
       let doc = match parse_document_from_file(&input_file) {
         Ok(doc) => doc,
@@ -128,7 +141,7 @@ fn main() {
         }
       };
 
-      match gen_swift(&doc, &Path::new(output_path), false) {
+      match gen_swift(&doc, &Path::new(output_path), render_mode, false) {
         Err(e @ swift_gen::Error::FileIsIdentical(_)) => println!("{}", format!("{}", e).dimmed()),
         Err(e) => {
           println!("{}", format!("{}", e).red());

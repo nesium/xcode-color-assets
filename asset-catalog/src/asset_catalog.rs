@@ -1,11 +1,10 @@
 use super::ColorSpace;
 use super::Error;
 use parser::ast::{
-  Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
-  Variable,
+  Color, ColorSet, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value, Variable,
 };
+use parser::{ResolvedColorSet, ResolvedVariable, VarContext};
 use serde_json::json;
-use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
@@ -17,27 +16,21 @@ fn path_to_str(path: &Path) -> String {
     .unwrap()
 }
 
-enum ResolvedVariable<'a> {
-  Color(Color),
-  ColorSet(&'a ColorSet),
-}
-
 struct Config<'a> {
   color_space: ColorSpace,
-  var_lookup: HashMap<String, &'a Value>,
+  var_lookup: VarContext<'a>,
 }
 
 impl<'a> Config<'a> {
-  fn resolve_variable(&self, variable: &Variable) -> Result<ResolvedVariable<'a>, Error> {
-    let value = match self.var_lookup.get(&variable.identifier) {
-      Some(value) => value,
-      None => return Err(Error::UnknownIdentifier(variable.identifier.to_string())),
-    };
-    match value {
-      Value::Variable(identifier) => self.resolve_variable(identifier),
-      Value::Color(color) => Ok(ResolvedVariable::Color(variable.resolve_against(color))),
-      Value::ColorSet(colorset) => Ok(ResolvedVariable::ColorSet(colorset)),
-    }
+  fn resolve_variable(&self, variable: &Variable) -> Result<ResolvedVariable, Error> {
+    self.var_lookup.resolve(variable).map_err(|err| err.into())
+  }
+
+  fn resolve_colorset(&self, colorset: &ColorSet) -> Result<ResolvedColorSet, Error> {
+    self
+      .var_lookup
+      .resolve_colorset(colorset)
+      .map_err(|err| err.into())
   }
 }
 
@@ -47,19 +40,9 @@ pub fn write_asset_catalog(
   color_space: ColorSpace,
   delete_directory_if_exists: bool,
 ) -> Result<(), Error> {
-  let var_lookup: HashMap<String, &Value> = doc
-    .items
-    .iter()
-    .filter_map(|item| match item {
-      DocumentItem::Variable(v) => Some(v),
-      _ => None,
-    })
-    .map(|variable| (variable.identifier.to_string(), &variable.value))
-    .collect();
-
   let config = Config {
     color_space,
-    var_lookup,
+    var_lookup: VarContext::derive_from(doc),
   };
 
   if path.exists() {
@@ -186,41 +169,21 @@ fn write_declaration(
     };
 
   let append_colorset =
-    |value: &mut serde_json::value::Value, colorset: &ColorSet| -> Result<(), Error> {
-      match colorset.light {
-        ColorSetValue::Variable(ref variable) => match config.resolve_variable(variable)? {
-          ResolvedVariable::Color(color) => append_light_color(value, &color)?,
-          ResolvedVariable::ColorSet(_) => {
-            return Err(Error::AssignColorSetToLightProperty(
-              variable.identifier.to_string(),
-            ))
-          }
-        },
-        ColorSetValue::Color(ref color) => append_light_color(value, color)?,
-      }
-
-      match colorset.dark {
-        ColorSetValue::Variable(ref variable) => match config.resolve_variable(variable)? {
-          ResolvedVariable::Color(color) => append_dark_color(value, &color)?,
-          ResolvedVariable::ColorSet(_) => {
-            return Err(Error::AssignColorSetToDarkProperty(
-              variable.identifier.to_string(),
-            ))
-          }
-        },
-        ColorSetValue::Color(ref color) => append_dark_color(value, color)?,
-      }
-
+    |value: &mut serde_json::value::Value, colorset: &ResolvedColorSet| -> Result<(), Error> {
+      append_light_color(value, &colorset.light)?;
+      append_dark_color(value, &colorset.dark)?;
       Ok(())
     };
 
   match declaration.value {
     Value::Variable(ref identifier) => match config.resolve_variable(identifier)? {
       ResolvedVariable::Color(color) => append_light_color(&mut info, &color)?,
-      ResolvedVariable::ColorSet(colorset) => append_colorset(&mut info, colorset)?,
+      ResolvedVariable::ColorSet(colorset) => append_colorset(&mut info, &colorset)?,
     },
     Value::Color(ref color) => append_light_color(&mut info, color)?,
-    Value::ColorSet(ref colorset) => append_colorset(&mut info, colorset)?,
+    Value::ColorSet(ref colorset) => {
+      append_colorset(&mut info, &config.resolve_colorset(colorset)?)?
+    }
   }
 
   let json_path = colorset_path.join("Contents.json");
