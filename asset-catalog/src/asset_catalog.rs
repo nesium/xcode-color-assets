@@ -1,8 +1,7 @@
 use super::ColorSpace;
 use super::Error;
 use parser::ast::{
-  Color, ColorSet, ColorSetValue, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value,
-  Variable,
+  Color, ColorSet, Declaration, Document, DocumentItem, RuleSet, RuleSetItem, Value, Variable,
 };
 use parser::{ResolvedColorSet, ResolvedVariable, VarContext};
 use serde_json::json;
