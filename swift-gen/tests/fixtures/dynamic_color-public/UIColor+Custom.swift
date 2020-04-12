@@ -44,26 +44,26 @@ private let ColorSets: [ColorSet] = [
 ]
 
 extension UIColor {
-  enum Custom {
-    static let LightContentSeparator = dynamicColor(ColorSets[0])
-    enum NumericInput {
-      static let Background = dynamicColor(ColorSets[1])
-      enum DoneKey {
-        static let Background = dynamicColor(ColorSets[2])
-        static let Highlight = dynamicColor(ColorSets[3])
-        static let Shadow = dynamicColor(ColorSets[4])
-        static let Text = dynamicColor(ColorSets[5])
+  public enum Custom {
+    public static let LightContentSeparator = dynamicColor(ColorSets[0])
+    public enum NumericInput {
+      public static let Background = dynamicColor(ColorSets[1])
+      public enum DoneKey {
+        public static let Background = dynamicColor(ColorSets[2])
+        public static let Highlight = dynamicColor(ColorSets[3])
+        public static let Shadow = dynamicColor(ColorSets[4])
+        public static let Text = dynamicColor(ColorSets[5])
       }
-      enum NumericKey {
-        static let Background = dynamicColor(ColorSets[6])
-        static let Highlight = dynamicColor(ColorSets[7])
-        static let Shadow = dynamicColor(ColorSets[8])
-        static let Text = dynamicColor(ColorSets[5])
+      public enum NumericKey {
+        public static let Background = dynamicColor(ColorSets[6])
+        public static let Highlight = dynamicColor(ColorSets[7])
+        public static let Shadow = dynamicColor(ColorSets[8])
+        public static let Text = dynamicColor(ColorSets[5])
       }
     }
-    enum Text {
-      static let Primary = dynamicColor(ColorSets[9])
-      static let Secondary = dynamicColor(ColorSets[10])
+    public enum Text {
+      public static let Primary = dynamicColor(ColorSets[9])
+      public static let Secondary = dynamicColor(ColorSets[10])
     }
   }
 }

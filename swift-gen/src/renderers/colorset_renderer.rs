@@ -20,15 +20,16 @@ impl Renderer for ColorSetRenderer {
 impl ColorSetRenderer {
   fn render_ruleset_into(&self, ruleset: &RuleSet, d: &mut String, config: &RendererConfig) {
     d.push_str(&format!(
-      "{}enum {} {{\n",
+      "{}{}enum {} {{\n",
       config.indent(ruleset.identifier.depth),
+      config.access_level.to_string(),
       ruleset.identifier.short
     ));
 
     for item in &ruleset.items {
       match item {
-        RuleSetItem::Declaration(decl) => self.render_declaration_into(decl, d, config), 
-        RuleSetItem::RuleSet(ruleset) => self.render_ruleset_into(ruleset, d, config)
+        RuleSetItem::Declaration(decl) => self.render_declaration_into(decl, d, config),
+        RuleSetItem::RuleSet(ruleset) => self.render_ruleset_into(ruleset, d, config),
       }
     }
 
@@ -42,8 +43,9 @@ impl ColorSetRenderer {
     config: &RendererConfig,
   ) {
     d.push_str(&format!(
-      "{}static let {} = UIColor(named: \"{}\")!\n",
+      "{}{}static let {} = UIColor(named: \"{}\")!\n",
       config.indent(declaration.identifier.depth),
+      config.access_level.to_string(),
       declaration.identifier.short,
       declaration.identifier.full
     ))

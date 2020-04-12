@@ -26,16 +26,43 @@ impl FromStr for RenderMode {
   }
 }
 
+pub enum AccessLevel {
+  Internal,
+  Public,
+}
+
+impl FromStr for AccessLevel {
+  type Err = ();
+
+  fn from_str(s: &str) -> Result<AccessLevel, ()> {
+    match s.to_lowercase().as_ref() {
+      "internal" => Ok(AccessLevel::Internal),
+      "public" => Ok(AccessLevel::Public),
+      _ => Err(()),
+    }
+  }
+}
+
+impl ToString for AccessLevel {
+  fn to_string(&self) -> String {
+    match self {
+      AccessLevel::Internal => "".to_string(),
+      AccessLevel::Public => "public ".to_string(),
+    }
+  }
+}
+
 pub fn gen_swift(
   doc: &Document,
   path: &Path,
   mode: RenderMode,
   force_overwrite: bool,
+  access_level: AccessLevel,
 ) -> Result<(), Error> {
   let root = RendererRuleSet::derive_from(doc)?;
 
   let mut contents = String::new();
-  let config = RendererConfig::new("  ");
+  let config = RendererConfig::new("  ", access_level);
 
   let renderer: Box<dyn Renderer> = match mode {
     RenderMode::ColorSet => Box::new(ColorSetRenderer {}),

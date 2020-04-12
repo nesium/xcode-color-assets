@@ -28,7 +28,6 @@ impl fmt::Display for Error {
 
 impl From<parser::Error> for Error {
   fn from(error: parser::Error) -> Self {
-    use std::error::Error;
-    Self::VariableLookupFailure(error.description().to_string())
+    Self::VariableLookupFailure(error.to_string())
   }
 }

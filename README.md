@@ -108,7 +108,7 @@ $ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift -mode 
 
 import UIKit
 
-fileprivate struct ColorSet {
+private struct ColorSet {
   var light: UIColor
   var dark: UIColor?
 
@@ -118,7 +118,7 @@ fileprivate struct ColorSet {
   }
 }
 
-fileprivate func dynamicColor(_ colorSet: ColorSet) -> UIColor {
+private func dynamicColor(_ colorSet: ColorSet) -> UIColor {
   if #available(iOS 13.0, *) {
     return UIColor { traits -> UIColor in
       switch traits.userInterfaceStyle {
@@ -135,7 +135,7 @@ fileprivate func dynamicColor(_ colorSet: ColorSet) -> UIColor {
   }
 }
 
-fileprivate let ColorSets: [ColorSet] = [
+private let ColorSets: [ColorSet] = [
   ColorSet(UIColor(red: 0.945, green: 0.949, blue: 0.949, alpha: 1.00), UIColor(red: 0.133, green: 0.145, blue: 0.145, alpha: 1.00)),
   ColorSet(UIColor(red: 0.839, green: 0.851, blue: 0.871, alpha: 0.30), UIColor(red: 0.192, green: 0.192, blue: 0.192, alpha: 0.40)),
   ColorSet(UIColor(red: 0.098, green: 0.784, blue: 1.000, alpha: 1.00), UIColor(red: 0.341, green: 0.325, blue: 0.812, alpha: 1.00)),
