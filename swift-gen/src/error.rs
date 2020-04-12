@@ -23,14 +23,12 @@ impl fmt::Display for Error {
 
 impl From<std::io::Error> for Error {
   fn from(error: std::io::Error) -> Self {
-    use std::error::Error;
-    Self::IO(error.description().to_string())
+    Self::IO(error.to_string())
   }
 }
 
 impl From<parser::Error> for Error {
   fn from(error: parser::Error) -> Self {
-    use std::error::Error;
-    Self::VariableLookupFailure(error.description().to_string())
+    Self::VariableLookupFailure(error.to_string())
   }
 }

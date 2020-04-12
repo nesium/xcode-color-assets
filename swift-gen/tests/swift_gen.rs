@@ -2,7 +2,7 @@ use parser::{ast::Document, parse_document};
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use swift_gen::{gen_swift, Error, RenderMode};
+use swift_gen::{gen_swift, AccessLevel, Error, RenderMode};
 use tempdir::TempDir;
 
 #[test]
@@ -14,9 +14,26 @@ fn generate_swift_colorset_file() {
     &tmp_dir.path().join("UIColor+Custom.swift"),
     RenderMode::ColorSet,
     true,
+    AccessLevel::Internal,
   )
   .expect("Could not write Swift file");
   assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/colorset").unwrap());
+}
+
+#[test]
+fn generate_swift_colorset_file_with_public_access() {
+  let tmp_dir = TempDir::new("generate_swift_file").expect("Create temp dir failed");
+
+  gen_swift(
+    &test_document(),
+    &tmp_dir.path().join("UIColor+Custom.swift"),
+    RenderMode::ColorSet,
+    true,
+    AccessLevel::Public,
+  )
+  .expect("Could not write Swift file");
+  println!("{}", tmp_dir.path().to_str().unwrap());
+  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/colorset-public").unwrap());
 }
 
 #[test]
@@ -28,9 +45,25 @@ fn generate_swift_dynamic_color_file() {
     &tmp_dir.path().join("UIColor+Custom.swift"),
     RenderMode::DynamicColor,
     true,
+    AccessLevel::Internal,
   )
   .expect("Could not write Swift file");
   assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/dynamic_color").unwrap());
+}
+
+#[test]
+fn generate_swift_dynamic_color_file_with_public_access() {
+  let tmp_dir = TempDir::new("generate_swift_file").expect("Create temp dir failed");
+
+  gen_swift(
+    &test_document(),
+    &tmp_dir.path().join("UIColor+Custom.swift"),
+    RenderMode::DynamicColor,
+    true,
+    AccessLevel::Public,
+  )
+  .expect("Could not write Swift file");
+  assert!(!dir_diff::is_different(&tmp_dir.path(), "tests/fixtures/dynamic_color-public").unwrap());
 }
 
 #[test]
@@ -51,7 +84,13 @@ fn do_not_touch_identical_file() {
     "Expected modification date to be equal after copy."
   );
 
-  match gen_swift(&test_document(), &tmp_path, RenderMode::ColorSet, false) {
+  match gen_swift(
+    &test_document(),
+    &tmp_path,
+    RenderMode::ColorSet,
+    false,
+    AccessLevel::Internal,
+  ) {
     Err(Error::FileIsIdentical(path)) => {
       assert_eq!(std::path::Path::new(&path), tmp_path);
       assert!(
@@ -64,8 +103,14 @@ fn do_not_touch_identical_file() {
     Ok(()) => panic!("Expected Err, got Ok"),
   }
 
-  gen_swift(&test_document(), &tmp_path, RenderMode::ColorSet, true)
-    .expect("Could not write Swift file");
+  gen_swift(
+    &test_document(),
+    &tmp_path,
+    RenderMode::ColorSet,
+    true,
+    AccessLevel::Internal,
+  )
+  .expect("Could not write Swift file");
   assert!(
     !is_modification_date_equal(&tmp_path, &fixture_path),
     "Expected modification date to differ after swift_gen"

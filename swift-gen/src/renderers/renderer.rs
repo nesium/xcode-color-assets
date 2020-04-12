@@ -1,13 +1,16 @@
+use super::super::AccessLevel;
 use super::data::RuleSet;
 
 pub struct RendererConfig {
-  tab: String
+  tab: String,
+  pub access_level: AccessLevel,
 }
 
 impl RendererConfig {
-  pub fn new(tab: &str) -> Self {
+  pub fn new(tab: &str, access_level: AccessLevel) -> Self {
     RendererConfig {
-      tab: tab.to_owned()
+      tab: tab.to_owned(),
+      access_level,
     }
   }
 

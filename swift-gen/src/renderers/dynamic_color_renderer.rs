@@ -15,7 +15,7 @@ impl Renderer for DynamicColorRenderer {
 
 import UIKit
 
-fileprivate struct ColorSet {
+private struct ColorSet {
   var light: UIColor
   var dark: UIColor?
 
@@ -25,7 +25,7 @@ fileprivate struct ColorSet {
   }
 }
 
-fileprivate func dynamicColor(_ colorSet: ColorSet) -> UIColor {
+private func dynamicColor(_ colorSet: ColorSet) -> UIColor {
   if #available(iOS 13.0, *) {
     return UIColor { traits -> UIColor in
       switch traits.userInterfaceStyle {
@@ -44,7 +44,7 @@ fileprivate func dynamicColor(_ colorSet: ColorSet) -> UIColor {
 "#,
     );
     d.push_str("\n");
-    d.push_str("fileprivate let ColorSets: [ColorSet] = [\n");
+    d.push_str("private let ColorSets: [ColorSet] = [\n");
 
     for colorset in &colorset_map.colorsets {
       d.push_str(&format!(
@@ -150,8 +150,9 @@ impl DynamicColorRenderer {
     config: &RendererConfig,
   ) {
     d.push_str(&format!(
-      "{}enum {} {{\n",
+      "{}{}enum {} {{\n",
       config.indent(ruleset.identifier.depth),
+      config.access_level.to_string(),
       ruleset.identifier.short
     ));
 
@@ -173,8 +174,9 @@ impl DynamicColorRenderer {
     config: &RendererConfig,
   ) {
     d.push_str(&format!(
-      "{}static let {} = dynamicColor(ColorSets[{}])\n",
+      "{}{}static let {} = dynamicColor(ColorSets[{}])\n",
       config.indent(declaration.identifier.depth),
+      config.access_level.to_string(),
       declaration.identifier.short,
       map.index_for_declaration(declaration)
     ))

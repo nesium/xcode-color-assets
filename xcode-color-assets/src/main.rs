@@ -4,7 +4,7 @@ use colored::*;
 use parser::parse_document_from_file;
 use std::path::Path;
 use std::str::FromStr;
-use swift_gen::{gen_swift, RenderMode};
+use swift_gen::{gen_swift, AccessLevel, RenderMode};
 
 fn main() {
   let matches = App::new(crate_name!())
@@ -79,6 +79,17 @@ fn main() {
             .default_value("asset-catalog")
             .help("Specify if the generated code should reference the asset catalog or create dynamic colors programmatically")
             .value_name("MODE"),
+        )
+        .arg(
+          Arg::with_name("access-level")
+            .short("a")
+            .long("access")
+            .takes_value(true)
+            .possible_value("internal")
+            .possible_value("public")
+            .default_value("internal")
+            .help("The access level for the generated code")
+            .value_name("ACCESS-LEVEL"),
         ),
     )
     .get_matches();
@@ -132,6 +143,8 @@ fn main() {
       let output_path = m.value_of("output").unwrap();
       let render_mode =
         RenderMode::from_str(m.value_of("mode").unwrap()).expect("Unknown render mode");
+      let access_level =
+        AccessLevel::from_str(m.value_of("access-level").unwrap()).expect("Unknown access level");
 
       let doc = match parse_document_from_file(&input_file) {
         Ok(doc) => doc,
@@ -141,7 +154,13 @@ fn main() {
         }
       };
 
-      match gen_swift(&doc, &Path::new(output_path), render_mode, false) {
+      match gen_swift(
+        &doc,
+        &Path::new(output_path),
+        render_mode,
+        false,
+        access_level,
+      ) {
         Err(e @ swift_gen::Error::FileIsIdentical(_)) => println!("{}", format!("{}", e).dimmed()),
         Err(e) => {
           println!("{}", format!("{}", e).red());
