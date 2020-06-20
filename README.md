@@ -63,7 +63,7 @@ $ xcode-color-assets gen-assets colors.assetstyles -o Colors.xcassets --color-sp
 #### First option: Reference the generated Asset Catalog
 
 ```
-$ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift -mode asset-catalog
+$ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift --mode asset-catalog
 ```
 
 ```swift
@@ -100,7 +100,7 @@ extension UIColor {
 #### Second option: Dynamic colors
 
 ```
-$ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift -mode dynamic-color
+$ xcode-color-assets gen-swift colors.assetstyles -o UIColor+Custom.swift --mode dynamic-color
 ```
 
 ```swift
