@@ -4,15 +4,15 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 0, in TakeWhileMN:
+Error: 0: at line 1, in TakeWhileMN:
 a: #ff0zff
     ^
 
-1: at line 0, in Hex Value:
+1: at line 1, in Hex Value:
 a: #ff0zff
     ^
 
-2: at line 0, in Declaration:
+2: at line 1, in Declaration:
 a: #ff0zff
 ^
 

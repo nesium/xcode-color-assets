@@ -4,16 +4,16 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 1:
+Error: 0: at line 2:
     a: (light: #ff00ff 30%; dark: #00ff00)
                           ^
 expected ',', found ;
 
-1: at line 1, in ColorSet:
+1: at line 2, in ColorSet:
     a: (light: #ff00ff 30%; dark: #00ff00)
        ^
 
-2: at line 1, in Declaration:
+2: at line 2, in Declaration:
     a: (light: #ff00ff 30%; dark: #00ff00)
     ^
 

@@ -4,7 +4,7 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 0:
+Error: 0: at line 1:
 a: #ffffff 33?
            ^
 expected '\n', found 3

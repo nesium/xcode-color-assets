@@ -4,16 +4,16 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 0:
+Error: 0: at line 1:
 $a: rgba(0, 127; 255, 0.5)
                ^
 expected ',', found ;
 
-1: at line 0, in RGBA Value:
+1: at line 1, in RGBA Value:
 $a: rgba(0, 127; 255, 0.5)
     ^
 
-2: at line 0, in Variable:
+2: at line 1, in Variable:
 $a: rgba(0, 127; 255, 0.5)
 ^
 

@@ -4,13 +4,13 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 0:
+Error: 0: at line 1:
 something
          ^
 expected ':', found 
 
 
-1: at line 0, in Declaration:
+1: at line 1, in Declaration:
 something
 ^
 

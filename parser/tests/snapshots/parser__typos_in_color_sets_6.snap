@@ -4,28 +4,28 @@ creator: insta@0.10.1
 source: parser/tests/parser.rs
 expression: "format!(\"{}\" , e)"
 ---
-Error: 0: at line 3:
+Error: 0: at line 4:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
               ^
 expected '$', found .
 
-1: at line 3, in Variable Identifier:
+1: at line 4, in Variable Identifier:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
               ^
 
-2: at line 3, in Alt:
+2: at line 4, in Alt:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
               ^
 
-3: at line 3, in Declaration:
+3: at line 4, in Declaration:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
         ^
 
-4: at line 3, in ColorSet:
+4: at line 4, in ColorSet:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
        ^
 
-5: at line 3, in Declaration:
+5: at line 4, in Declaration:
     c: (dark: .applicationBackgroundLight, light: #ff00ff 30%)
     ^
 
