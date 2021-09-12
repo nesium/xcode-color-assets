@@ -1,6 +1,6 @@
 [package]
 name = "xcode-color-assets"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["mb <mb@nesium.com>"]
 edition = "2018"
 description = "Create (dark mode compatible) color assets for Xcode programmatically from a CSS-like textfile"
