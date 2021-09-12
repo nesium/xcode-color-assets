@@ -14,6 +14,19 @@ impl Renderer for ColorSetRenderer {
     d.push_str("extension UIColor {\n");
     self.render_ruleset_into(ruleset, d, config);
     d.push_str("}\n");
+    d.push_str("\n");
+    d.push_str(
+r#"private final class BundleToken {
+  static let bundle: Bundle = {
+    #if SWIFT_PACKAGE
+    return Bundle.module
+    #else
+    return Bundle(for: BundleToken.self)
+    #endif
+  }()
+}
+"#
+    );
   }
 }
 
@@ -43,7 +56,7 @@ impl ColorSetRenderer {
     config: &RendererConfig,
   ) {
     d.push_str(&format!(
-      "{}{}static let {} = UIColor(named: \"{}\")!\n",
+      "{}{}static let {} = UIColor(named: \"{}\", in: BundleToken.bundle, compatibleWith: nil)!\n",
       config.indent(declaration.identifier.depth),
       config.access_level.to_string(),
       declaration.identifier.short,
