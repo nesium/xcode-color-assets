@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "swift-parsing",
+        "repositoryURL": "https://github.com/pointfreeco/swift-parsing",
+        "state": {
+          "branch": null,
+          "revision": "0f539b4977ee83251bc228dd067cbbe48e1430c2",
+          "version": "0.3.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
