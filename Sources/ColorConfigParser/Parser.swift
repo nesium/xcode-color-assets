@@ -12,7 +12,7 @@ private let document = Skip(Whitespace())
   .map(Document.init)
 
 private let documentItem =
-  variable.map(DocumentItem.declaration)
+  variable.map(DocumentItem.variable)
     .orElse(ruleSet().map(DocumentItem.ruleSet))
     .orElse(declaration(value).map(DocumentItem.declaration))
 

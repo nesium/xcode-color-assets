@@ -21,8 +21,8 @@ public enum RuleSetItem {
 }
 
 public struct Declaration<T> {
-  var identifier: String
-  var value: T
+  public var identifier: String
+  public var value: T
 }
 
 public enum Value {
