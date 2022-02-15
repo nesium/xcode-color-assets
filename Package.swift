@@ -15,7 +15,7 @@ let package = Package(
     .package(
       name: "swift-parsing",
       url: "https://github.com/pointfreeco/swift-parsing",
-      .upToNextMajor(from: "0.3.1")
+      .upToNextMajor(from: "0.7.0")
     ),
     .package(
       name: "swift-argument-parser",
