@@ -155,12 +155,12 @@ fn write_declaration(
     |value: &mut serde_json::value::Value, color: &Color| -> Result<(), Error> {
       let arr = value["colors"].as_array_mut().unwrap();
       arr.push(json!({
-        "idiom" : "universal",
-        "appearances" : [{
-          "appearance" : "luminosity",
-          "value" : "dark"
+        "idiom": "universal",
+        "appearances": [{
+          "appearance": "luminosity",
+          "value": "dark"
         }],
-        "color" : {
+        "color": {
           "color-space" : config.color_space.to_string(),
           "components" : components(color)
         }
