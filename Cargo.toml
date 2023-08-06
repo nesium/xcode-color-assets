@@ -1,9 +1,6 @@
 [workspace]
 members = [
-  "asset-catalog",
-  "parser",
-  "swift-gen",
-  "xcode-color-assets",
+  "crates/*",
 ]
 resolver = "2"
 
@@ -12,3 +9,18 @@ anyhow = "1.0"
 dir-diff = "0.3"
 tempdir = "0.3"
 thiserror = "1.0"
+
+[package]
+name = "xcode-color-assets"
+version = "0.6.0"
+authors = ["mb <mb@nesium.com>"]
+edition = "2021"
+description = "Create (dark mode compatible) color assets for Xcode programmatically from a CSS-like textfile"
+
+[dependencies]
+anyhow = { workspace = true }
+asset-catalog = { path = "./crates/asset-catalog" }
+clap = { version = "4.3", features = ["derive", "wrap_help"] }
+colored = "2.0"
+parser = { path = "./crates/parser" }
+swift-gen = { path = "./crates/swift-gen" }
