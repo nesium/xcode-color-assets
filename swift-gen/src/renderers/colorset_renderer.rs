@@ -16,7 +16,7 @@ impl Renderer for ColorSetRenderer {
     d.push_str("}\n");
     d.push_str("\n");
     d.push_str(
-r#"private final class BundleToken {
+      r#"private final class BundleToken {
   static let bundle: Bundle = {
     #if SWIFT_PACKAGE
     return Bundle.module
@@ -25,7 +25,7 @@ r#"private final class BundleToken {
     #endif
   }()
 }
-"#
+"#,
     );
   }
 }

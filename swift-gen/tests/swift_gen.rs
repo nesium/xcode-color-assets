@@ -91,15 +91,15 @@ fn do_not_touch_identical_file() {
     false,
     AccessLevel::Internal,
   ) {
-    Err(Error::FileIsIdentical(path)) => {
-      assert_eq!(std::path::Path::new(&path), tmp_path);
+    Err(Error::FileIsIdentical { path }) => {
+      assert_eq!(Path::new(&path), tmp_path);
       assert!(
         is_modification_date_equal(&fixture_path, &tmp_path),
         "Expected modification date to be equal after swift_gen"
       );
     }
-    Err(Error::VariableLookupFailure(msg)) => panic!("{}", msg),
-    Err(Error::IO(msg)) => panic!("Unexpected error {}", msg),
+    Err(Error::Parser { source }) => panic!("{}", source),
+    Err(Error::Io { source }) => panic!("Unexpected error {}", source),
     Ok(()) => panic!("Expected Err, got Ok"),
   }
 

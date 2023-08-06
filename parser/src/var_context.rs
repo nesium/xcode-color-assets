@@ -21,10 +21,12 @@ impl<'a> VarContext<'a> {
     let value = match self.map.get(&variable.identifier) {
       Some(value) => value,
       None => {
-        return Err(Error::new(format!(
-          "Could not find variable with identifier {}.",
-          variable.identifier
-        )))
+        return Err(Error::ResolveError {
+          message: format!(
+            "Could not find variable with identifier {}.",
+            variable.identifier
+          ),
+        });
       }
     };
     match value {
@@ -41,10 +43,12 @@ impl<'a> VarContext<'a> {
       ColorSetValue::Color(color) => Ok(color.clone()),
       ColorSetValue::Variable(ref light_variable) => match self.resolve(light_variable)? {
         ResolvedVariable::Color(color) => Ok(color),
-        ResolvedVariable::ColorSet(_) => Err(Error::new(format!(
-          "Attempt to assign a colorset to the light property of another colorset via variable {}.",
-          light_variable.identifier
-        ))),
+        ResolvedVariable::ColorSet(_) => Err(Error::ResolveError {
+          message: format!(
+            "Attempt to assign a colorset to the light property of another colorset via variable {}.",
+            light_variable.identifier
+          )
+        }),
       },
     }?;
 
@@ -52,10 +56,12 @@ impl<'a> VarContext<'a> {
       ColorSetValue::Color(color) => Ok(color.clone()),
       ColorSetValue::Variable(ref dark_variable) => match self.resolve(dark_variable)? {
         ResolvedVariable::Color(color) => Ok(color),
-        ResolvedVariable::ColorSet(_) => Err(Error::new(format!(
-          "Attempt to assign a colorset to the dark property of another colorset via variable {}.",
-          dark_variable.identifier
-        ))),
+        ResolvedVariable::ColorSet(_) => Err(Error::ResolveError {
+          message: format!(
+            "Attempt to assign a colorset to the dark property of another colorset via variable {}.",
+            dark_variable.identifier
+          )
+        }),
       },
     }?;
 

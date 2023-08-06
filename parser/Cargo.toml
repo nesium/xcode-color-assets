@@ -2,10 +2,11 @@
 name = "parser"
 version = "0.1.0"
 authors = ["mb <mb@nesium.com>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-nom = "5.0"
+nom = "7.1"
+thiserror = { workspace = true }
 
 [dev-dependencies]
-insta = "0.10"
+insta = "1.3"

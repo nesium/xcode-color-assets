@@ -5,3 +5,10 @@ members = [
   "swift-gen",
   "xcode-color-assets",
 ]
+resolver = "2"
+
+[workspace.dependencies]
+anyhow = "1.0"
+dir-diff = "0.3"
+tempdir = "0.3"
+thiserror = "1.0"

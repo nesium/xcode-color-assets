@@ -1,34 +1,18 @@
-use std::fmt;
+use std::io;
+use std::path::PathBuf;
 
-#[derive(Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-  FileIsIdentical(String),
-  IO(String),
-  VariableLookupFailure(String),
-}
-
-impl fmt::Display for Error {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    let message = match self {
-      Self::FileIsIdentical(path) => format!(
-        "Contents of file {} remain identical. The file has not been touched.",
-        path
-      ),
-      Self::IO(msg) => msg.to_string(),
-      Self::VariableLookupFailure(msg) => msg.to_string(),
-    };
-    write!(f, "{}", message)
-  }
-}
-
-impl From<std::io::Error> for Error {
-  fn from(error: std::io::Error) -> Self {
-    Self::IO(error.to_string())
-  }
-}
-
-impl From<parser::Error> for Error {
-  fn from(error: parser::Error) -> Self {
-    Self::VariableLookupFailure(error.to_string())
-  }
+  #[error("Contents of file {path:?} remain identical. The file has not been touched.")]
+  FileIsIdentical { path: PathBuf },
+  #[error(transparent)]
+  Io {
+    #[from]
+    source: io::Error,
+  },
+  #[error(transparent)]
+  Parser {
+    #[from]
+    source: parser::Error,
+  },
 }

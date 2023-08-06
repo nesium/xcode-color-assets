@@ -9,6 +9,7 @@ use std::io::prelude::Read;
 use std::path::Path;
 use std::str::FromStr;
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum RenderMode {
   ColorSet,
   DynamicColor,
@@ -26,6 +27,7 @@ impl FromStr for RenderMode {
   }
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum AccessLevel {
   Internal,
   Public,
@@ -54,7 +56,7 @@ impl ToString for AccessLevel {
 
 pub fn gen_swift(
   doc: &Document,
-  path: &Path,
+  path: impl AsRef<Path>,
   mode: RenderMode,
   force_overwrite: bool,
   access_level: AccessLevel,
@@ -72,13 +74,15 @@ pub fn gen_swift(
 
   let data = contents.as_bytes();
 
-  if !force_overwrite && path.exists() {
+  if !force_overwrite && path.as_ref().exists() {
     let mut existing_data = Vec::new();
     let mut existing_file = fs::File::open(&path)?;
     existing_file.read_to_end(&mut existing_data)?;
 
     if existing_data == data {
-      return Err(Error::FileIsIdentical(path.to_str().unwrap().to_string()));
+      return Err(Error::FileIsIdentical {
+        path: path.as_ref().into(),
+      });
     }
   }
 

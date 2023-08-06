@@ -1,24 +1,16 @@
-use std::fmt;
+use std::io;
+use std::str::Utf8Error;
 
-#[derive(Debug)]
-pub struct Error {
-  error: String,
-}
-
-impl Error {
-  pub fn new(error: String) -> Self {
-    Error { error }
-  }
-}
-
-impl std::error::Error for Error {
-  fn description(&self) -> &str {
-    &self.error
-  }
-}
-
-impl fmt::Display for Error {
-  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "Error: {}", self.error)
-  }
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+  #[error("{message}")]
+  InvalidColorSetDeclaration { message: String },
+  #[error("Error: {message}")]
+  ParseError { message: String },
+  #[error("{message}")]
+  ResolveError { message: String },
+  #[error(transparent)]
+  Io(#[from] io::Error),
+  #[error(transparent)]
+  Utf8(#[from] Utf8Error),
 }

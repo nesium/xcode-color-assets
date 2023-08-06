@@ -8,14 +8,6 @@ use serde_json::json;
 use std::fs;
 use std::path::Path;
 
-fn path_to_str(path: &Path) -> String {
-  path
-    .file_name()
-    .and_then(|s| s.to_str())
-    .map(String::from)
-    .unwrap()
-}
-
 struct Config<'a> {
   color_space: ColorSpace,
   var_lookup: VarContext<'a>,
@@ -36,10 +28,12 @@ impl<'a> Config<'a> {
 
 pub fn write_asset_catalog(
   doc: &Document,
-  path: &Path,
+  path: impl AsRef<Path>,
   color_space: ColorSpace,
   delete_directory_if_exists: bool,
 ) -> Result<(), Error> {
+  let path = path.as_ref();
+
   let config = Config {
     color_space,
     var_lookup: VarContext::derive_from(doc),
@@ -47,12 +41,12 @@ pub fn write_asset_catalog(
 
   if path.exists() {
     if delete_directory_if_exists {
-      fs::remove_dir_all(&path).map_err(|_| Error::CouldNotRemoveDirectory(path_to_str(&path)))?;
+      fs::remove_dir_all(&path)?;
     } else {
-      return Err(Error::CatalogExists(path_to_str(path)));
+      return Err(Error::CatalogExists { path: path.into() });
     }
   }
-  fs::create_dir_all(&path).map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&path)))?;
+  fs::create_dir_all(&path)?;
 
   for item in doc.items.iter() {
     match item {
@@ -71,13 +65,12 @@ pub fn write_asset_catalog(
 
 fn write_ruleset(
   ruleset: &RuleSet,
-  path: &Path,
+  path: impl AsRef<Path>,
   identifier: &str,
   config: &Config,
 ) -> Result<(), Error> {
-  let ruleset_path = path.join(&ruleset.identifier);
-  fs::create_dir(&ruleset_path)
-    .map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&ruleset_path)))?;
+  let ruleset_path = path.as_ref().join(&ruleset.identifier);
+  fs::create_dir(&ruleset_path)?;
 
   let info = json!({
     "info": {
@@ -91,8 +84,7 @@ fn write_ruleset(
   fs::write(
     &json_path,
     serde_json::to_string_pretty(&info).unwrap().as_bytes(),
-  )
-  .map_err(|_| Error::CouldNotCreateFile(path_to_str(&json_path)))?;
+  )?;
 
   for item in ruleset.items.iter() {
     match item {
@@ -112,14 +104,16 @@ fn write_ruleset(
 
 fn write_declaration(
   declaration: &Declaration<Value>,
-  path: &Path,
+  path: impl AsRef<Path>,
   identifier: &str,
   config: &Config,
 ) -> Result<(), Error> {
-  let colorset_path = path.join(identifier.to_string()).with_extension("colorset");
+  let colorset_path = path
+    .as_ref()
+    .join(identifier.to_string())
+    .with_extension("colorset");
 
-  fs::create_dir(&colorset_path)
-    .map_err(|_| Error::CouldNotCreateDirectory(path_to_str(&colorset_path)))?;
+  fs::create_dir(&colorset_path)?;
 
   let mut info: serde_json::value::Value = json!({
     "info": {
@@ -191,6 +185,7 @@ fn write_declaration(
   fs::write(
     &json_path,
     serde_json::to_string_pretty(&info).unwrap().as_bytes(),
-  )
-  .map_err(|_| Error::CouldNotCreateFile(path_to_str(&json_path)))
+  )?;
+
+  Ok(())
 }

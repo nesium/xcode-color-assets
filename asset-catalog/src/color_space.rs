@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use std::string::ToString;
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum ColorSpace {
   DisplayP3,
   SRGB,

@@ -1,4 +1,4 @@
-use insta::{assert_debug_snapshot_matches, assert_snapshot_matches};
+use insta::{assert_debug_snapshot, assert_snapshot};
 use parser::parse_document;
 
 #[test]
@@ -267,7 +267,7 @@ fn document() {
 
 fn test_parse_doc(test_name: &str, contents: &str) {
   match parse_document(contents.to_string()) {
-    Ok(doc) => assert_debug_snapshot_matches!(test_name, doc),
-    Err(e) => assert_snapshot_matches!(test_name, format!("{}", e)),
+    Ok(doc) => assert_debug_snapshot!(test_name, doc),
+    Err(e) => assert_snapshot!(test_name, format!("{}", e)),
   }
 }
