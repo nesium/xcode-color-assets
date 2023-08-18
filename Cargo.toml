@@ -12,7 +12,7 @@ thiserror = "1.0"
 
 [package]
 name = "xcode-color-assets"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["mb <mb@nesium.com>"]
 edition = "2021"
 description = "Create (dark mode compatible) color assets for Xcode programmatically from a CSS-like textfile"
